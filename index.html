@@ -140,6 +140,78 @@
       border-left: 4px solid #e53e3e;
     }
     
+    .success-message {
+      background: #c6f6d5;
+      color: #2f855a;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      border-left: 4px solid #38a169;
+    }
+    
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+      position: relative;
+    }
+    
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .input-container {
+      position: relative;
+    }
+    
+    .input-help {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 15px;
+      padding: 8px 12px;
+      background: #f7fafc;
+      border-radius: 6px;
+      border-left: 3px solid #4299e1;
+    }
+    
+    .counter {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      background: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    .button-status {
+      font-size: 0.8rem;
+      color: #4a5568;
+      text-align: center;
+      margin-top: 5px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .button-status.show {
+      opacity: 1;
+    }
+    
     .icon {
       font-size: 18px;
     }
@@ -159,19 +231,86 @@
 <body>
   <div class="container">
     <h2>WhatsApp Sender</h2>
-    <label for="phoneInput">Enter phone number(s):</label>
-    <textarea id="phoneInput" rows="4" placeholder="60123456789 or multiple like 60123456789, 601112345678"></textarea>
     
-    <button class="generate-btn" onclick="generateLinks()">
+    <div class="input-container">
+      <label for="phoneInput">Enter phone number(s):</label>
+      <div class="input-help">
+        📱 Supported format: Malaysian numbers starting with 601 (e.g., 60123456789)<br>
+        ✨ You can enter multiple numbers separated by commas, spaces, or new lines
+      </div>
+      <textarea 
+        id="phoneInput" 
+        rows="4" 
+        placeholder="60123456789 or multiple like:&#10;60123456789&#10;601112345678&#10;60133334444"
+        oninput="updateCounter()"
+        onkeydown="handleKeyDown(event)"
+      ></textarea>
+      <div class="counter" id="counter">0 numbers</div>
+    </div>
+    
+    <button class="generate-btn" onclick="generateLinks()" id="generateBtn">
       <span class="icon">🚀</span>
       Generate WhatsApp Links
     </button>
     
     <div class="buttons-container" id="output"></div>
+    <div class="button-status" id="status"></div>
   </div>
 
   <script>
-    function openWhatsApp(number) {
+    function showStatus(message, isSuccess = false) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = `button-status show ${isSuccess ? 'success' : ''}`;
+      
+      setTimeout(() => {
+        status.classList.remove('show');
+      }, 3000);
+    }
+    
+    function updateCounter() {
+      const input = document.getElementById('phoneInput').value;
+      const numbers = input.split(/[\s,]+/).map(num => num.trim()).filter(num => /^601\d{7,9}$/.test(num));
+      const counter = document.getElementById('counter');
+      
+      if (input.trim() === '') {
+        counter.textContent = '0 numbers';
+      } else {
+        const validCount = numbers.length;
+        const totalEntered = input.split(/[\s,]+/).map(num => num.trim()).filter(num => num !== '').length;
+        
+        if (validCount === totalEntered && validCount > 0) {
+          counter.textContent = `${validCount} valid number${validCount !== 1 ? 's' : ''}`;
+          counter.style.color = '#38a169';
+        } else {
+          counter.textContent = `${validCount}/${totalEntered} valid`;
+          counter.style.color = validCount > 0 ? '#d69e2e' : '#e53e3e';
+        }
+      }
+    }
+    
+    function handleKeyDown(event) {
+      // Allow Ctrl/Cmd + Enter to generate links
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        generateLinks();
+      }
+    }
+    
+    function setButtonLoading(button, loading) {
+      if (loading) {
+        button.classList.add('loading');
+        button.disabled = true;
+      } else {
+        button.classList.remove('loading');
+        button.disabled = false;
+      }
+    }
+
+    function openWhatsApp(number, button) {
+      setButtonLoading(button, true);
+      showStatus(`Opening WhatsApp for ${number}...`);
+      
       // Detect if user is on mobile device
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
@@ -188,36 +327,89 @@
           // Check if the page is still visible (app didn't open)
           if (!document.hidden) {
             window.open(webLink, '_blank');
+            showStatus(`Opened WhatsApp Web for ${number}`, true);
+          } else {
+            showStatus(`Opened WhatsApp app for ${number}`, true);
           }
+          setButtonLoading(button, false);
         }, 1500);
       } else {
         // On desktop, open WhatsApp Web directly
         const webLink = `https://wa.me/${number}`;
         window.open(webLink, '_blank');
+        showStatus(`Opened WhatsApp Web for ${number}`, true);
+        
+        setTimeout(() => {
+          setButtonLoading(button, false);
+        }, 1000);
       }
     }
 
     function generateLinks() {
       const input = document.getElementById('phoneInput').value;
       const outputDiv = document.getElementById('output');
+      const generateBtn = document.getElementById('generateBtn');
+      
+      setButtonLoading(generateBtn, true);
       outputDiv.innerHTML = ''; // clear previous output
 
       // Split by comma, space, or newline
-      const numbers = input.split(/[\s,]+/).map(num => num.trim()).filter(num => /^601\d{7,9}$/.test(num));
+      const allEntries = input.split(/[\s,]+/).map(num => num.trim()).filter(num => num !== '');
+      const validNumbers = allEntries.filter(num => /^601\d{7,9}$/.test(num));
+      const invalidNumbers = allEntries.filter(num => !(/^601\d{7,9}$/.test(num)));
 
-      if (numbers.length === 0) {
-        outputDiv.innerHTML = "<div class='error-message'>Please enter at least one valid number in format like 60123456789.</div>";
-        return;
-      }
+      setTimeout(() => {
+        setButtonLoading(generateBtn, false);
+        
+        if (allEntries.length === 0) {
+          outputDiv.innerHTML = "<div class='error-message'>📝 Please enter at least one phone number to get started!</div>";
+          return;
+        }
 
-      numbers.forEach(number => {
-        const button = document.createElement('button');
-        button.innerHTML = `<span class="icon">💬</span> Chat with ${number}`;
-        button.onclick = () => openWhatsApp(number);
+        if (validNumbers.length === 0) {
+          outputDiv.innerHTML = `
+            <div class='error-message'>
+              ❌ No valid numbers found.<br>
+              <strong>Required format:</strong> Malaysian numbers starting with 601<br>
+              <strong>Examples:</strong> 60123456789, 60112345678
+            </div>
+          `;
+          return;
+        }
 
-        outputDiv.appendChild(button);
-      });
+        // Show success message if we have valid numbers
+        if (validNumbers.length > 0) {
+          let successMessage = `✅ Generated ${validNumbers.length} WhatsApp link${validNumbers.length !== 1 ? 's' : ''} successfully!`;
+          if (invalidNumbers.length > 0) {
+            successMessage += ` (${invalidNumbers.length} invalid number${invalidNumbers.length !== 1 ? 's' : ''} skipped)`;
+          }
+          outputDiv.innerHTML = `<div class='success-message'>${successMessage}</div>`;
+        }
+
+        validNumbers.forEach(number => {
+          const button = document.createElement('button');
+          button.innerHTML = `<span class="icon">💬</span> Chat with ${number}`;
+          button.onclick = () => openWhatsApp(number, button);
+
+          outputDiv.appendChild(button);
+        });
+
+        // Show invalid numbers if any
+        if (invalidNumbers.length > 0) {
+          const invalidDiv = document.createElement('div');
+          invalidDiv.className = 'error-message';
+          invalidDiv.innerHTML = `
+            <strong>⚠️ Invalid numbers skipped:</strong><br>
+            ${invalidNumbers.join(', ')}<br>
+            <small>Make sure numbers start with 601 and have 10-12 digits total</small>
+          `;
+          outputDiv.appendChild(invalidDiv);
+        }
+      }, 500);
     }
+    
+    // Initialize counter on page load
+    document.addEventListener('DOMContentLoaded', updateCounter);
   </script>
 
 </body>
