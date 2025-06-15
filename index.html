@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WhatsApp Sender</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px 0;
+      background-color: #25d366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #1ebe5d;
+    }
+    .buttons-container {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>WhatsApp Sender</h2>
+  <label for="phoneInput">Enter phone number(s):</label>
+  <textarea id="phoneInput" rows="4" placeholder="60123456789 or multiple like 60123456789, 601112345678"></textarea>
+  
+  <button onclick="generateLinks()">Generate WhatsApp Link(s)</button>
+  
+  <div class="buttons-container" id="output"></div>
+
+  <script>
+    function generateLinks() {
+      const input = document.getElementById('phoneInput').value;
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = ''; // clear previous output
+
+      // Split by comma, space, or newline
+      const numbers = input.split(/[\s,]+/).map(num => num.trim()).filter(num => /^601\d{7,9}$/.test(num));
+
+      if (numbers.length === 0) {
+        outputDiv.innerHTML = "<p>Please enter at least one valid number in format like 60123456789.</p>";
+        return;
+      }
+
+      numbers.forEach(number => {
+        const waLink = `https://wa.me/${number}`;
+        const btn = document.createElement('a');
+        btn.href = waLink;
+        btn.target = '_blank';
+        btn.innerText = `Chat with ${number}`;
+        btn.className = 'wa-btn';
+        btn.style.display = 'block';
+        btn.style.textDecoration = 'none';
+
+        const button = document.createElement('button');
+        button.innerText = `📩 Chat with ${number}`;
+        button.onclick = () => window.open(waLink, '_blank');
+
+        outputDiv.appendChild(button);
+      });
+    }
+  </script>
+
+</body>
+</html>
