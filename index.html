@@ -130,6 +130,96 @@
       transform: translateY(0);
     }
     
+    .buttons-container button.clicked {
+      background: linear-gradient(135deg, #38a169, #2f855a);
+      opacity: 0.8;
+      position: relative;
+    }
+    
+    .buttons-container button.clicked::after {
+      content: '✓';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    
+    .buttons-container button.next-suggested {
+      background: linear-gradient(135deg, #ed8936, #dd6b20);
+      animation: pulse 2s infinite;
+      border: 2px solid #fed7aa;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3); }
+      50% { box-shadow: 0 8px 20px rgba(237, 137, 54, 0.6); }
+      100% { box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3); }
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #25d366, #128c7e);
+      transition: width 0.3s ease;
+      border-radius: 4px;
+    }
+    
+    .progress-text {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #4a5568;
+      margin-bottom: 15px;
+    }
+    
+    .workflow-controls {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      justify-content: center;
+    }
+    
+    .workflow-btn {
+      padding: 8px 16px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      color: #4a5568;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    
+    .workflow-btn:hover {
+      border-color: #4299e1;
+      color: #2b6cb0;
+    }
+    
+    .workflow-btn.active {
+      background: #4299e1;
+      color: white;
+      border-color: #3182ce;
+    }
+    
+    .completion-message {
+      background: linear-gradient(135deg, #68d391, #38a169);
+      color: white;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      margin: 20px 0;
+      font-weight: 600;
+    }
+    
     .error-message {
       background: #fed7d7;
       color: #c53030;
@@ -253,11 +343,28 @@
       Generate WhatsApp Links
     </button>
     
+    <div id="progressSection" style="display: none;">
+      <div class="progress-text" id="progressText">Ready to start messaging</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      
+      <div class="workflow-controls">
+        <button class="workflow-btn" onclick="resetProgress()">↻ Reset All</button>
+        <button class="workflow-btn" onclick="markAllDone()">✓ Mark All Done</button>
+        <button class="workflow-btn active" onclick="toggleAutoNext()" id="autoNextBtn">⚡ Auto-suggest Next</button>
+      </div>
+    </div>
+    
     <div class="buttons-container" id="output"></div>
     <div class="button-status" id="status"></div>
   </div>
 
   <script>
+    let clickedNumbers = new Set();
+    let allNumbers = [];
+    let autoNextEnabled = true;
+    
     function showStatus(message, isSuccess = false) {
       const status = document.getElementById('status');
       status.textContent = message;
@@ -266,6 +373,116 @@
       setTimeout(() => {
         status.classList.remove('show');
       }, 3000);
+    }
+    
+    function updateProgress() {
+      const total = allNumbers.length;
+      const completed = clickedNumbers.size;
+      const percentage = total > 0 ? (completed / total) * 100 : 0;
+      
+      document.getElementById('progressFill').style.width = `${percentage}%`;
+      
+      if (completed === 0) {
+        document.getElementById('progressText').textContent = `Ready to start messaging (0/${total})`;
+      } else if (completed === total) {
+        document.getElementById('progressText').innerHTML = `🎉 All messages sent! (${completed}/${total})`;
+        showCompletionMessage();
+      } else {
+        document.getElementById('progressText').textContent = `Progress: ${completed}/${total} contacts messaged`;
+      }
+    }
+    
+    function showCompletionMessage() {
+      const output = document.getElementById('output');
+      const existingCompletion = output.querySelector('.completion-message');
+      
+      if (!existingCompletion) {
+        const completionDiv = document.createElement('div');
+        completionDiv.className = 'completion-message';
+        completionDiv.innerHTML = `
+          🎉 <strong>All Done!</strong> You've messaged all ${allNumbers.length} contacts.<br>
+          <small>Great job on staying organized! 💪</small>
+        `;
+        output.insertBefore(completionDiv, output.firstChild);
+      }
+    }
+    
+    function getNextSuggestedButton() {
+      if (!autoNextEnabled) return null;
+      
+      const buttons = document.querySelectorAll('.buttons-container button:not(.clicked)');
+      return buttons.length > 0 ? buttons[0] : null;
+    }
+    
+    function updateNextSuggestion() {
+      // Remove previous suggestion
+      document.querySelectorAll('.next-suggested').forEach(btn => {
+        btn.classList.remove('next-suggested');
+      });
+      
+      // Add suggestion to next button
+      const nextBtn = getNextSuggestedButton();
+      if (nextBtn && autoNextEnabled) {
+        nextBtn.classList.add('next-suggested');
+      }
+    }
+    
+    function markButtonAsClicked(button, number) {
+      clickedNumbers.add(number);
+      button.classList.add('clicked');
+      button.innerHTML = `<span class="icon">✓</span> Sent to ${number}`;
+      
+      updateProgress();
+      updateNextSuggestion();
+      
+      // Save progress to localStorage
+      localStorage.setItem('whatsapp_clicked_numbers', JSON.stringify([...clickedNumbers]));
+    }
+    
+    function resetProgress() {
+      clickedNumbers.clear();
+      document.querySelectorAll('.buttons-container button').forEach(btn => {
+        btn.classList.remove('clicked', 'next-suggested');
+        const number = btn.getAttribute('data-number');
+        btn.innerHTML = `<span class="icon">💬</span> Chat with ${number}`;
+      });
+      
+      document.querySelector('.completion-message')?.remove();
+      updateProgress();
+      updateNextSuggestion();
+      localStorage.removeItem('whatsapp_clicked_numbers');
+      showStatus('Progress reset! Ready to start fresh 🔄');
+    }
+    
+    function markAllDone() {
+      allNumbers.forEach(number => clickedNumbers.add(number));
+      document.querySelectorAll('.buttons-container button').forEach(btn => {
+        const number = btn.getAttribute('data-number');
+        markButtonAsClicked(btn, number);
+      });
+      showStatus('All contacts marked as completed! 🎉', true);
+    }
+    
+    function toggleAutoNext() {
+      autoNextEnabled = !autoNextEnabled;
+      const btn = document.getElementById('autoNextBtn');
+      
+      if (autoNextEnabled) {
+        btn.classList.add('active');
+        btn.innerHTML = '⚡ Auto-suggest Next';
+        updateNextSuggestion();
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = '⚡ Auto-suggest Off';
+        document.querySelectorAll('.next-suggested').forEach(b => b.classList.remove('next-suggested'));
+      }
+    }
+    
+    function loadSavedProgress() {
+      const saved = localStorage.getItem('whatsapp_clicked_numbers');
+      if (saved) {
+        clickedNumbers = new Set(JSON.parse(saved));
+      }
     }
     
     function updateCounter() {
@@ -327,20 +544,27 @@
           // Check if the page is still visible (app didn't open)
           if (!document.hidden) {
             window.open(webLink, '_blank');
-            showStatus(`Opened WhatsApp Web for ${number}`, true);
+            showStatus(`WhatsApp Web opened for ${number}. Mark as done when finished! ✅`, true);
           } else {
-            showStatus(`Opened WhatsApp app for ${number}`, true);
+            showStatus(`WhatsApp app opened for ${number}. Mark as done when finished! ✅`, true);
           }
           setButtonLoading(button, false);
+          
+          // Auto-mark as clicked after opening
+          setTimeout(() => {
+            markButtonAsClicked(button, number);
+          }, 2000);
         }, 1500);
       } else {
         // On desktop, open WhatsApp Web directly
         const webLink = `https://wa.me/${number}`;
         window.open(webLink, '_blank');
-        showStatus(`Opened WhatsApp Web for ${number}`, true);
+        showStatus(`WhatsApp Web opened for ${number}. Mark as done when finished! ✅`, true);
         
         setTimeout(() => {
           setButtonLoading(button, false);
+          // Auto-mark as clicked after opening
+          markButtonAsClicked(button, number);
         }, 1000);
       }
     }
@@ -384,15 +608,33 @@
             successMessage += ` (${invalidNumbers.length} invalid number${invalidNumbers.length !== 1 ? 's' : ''} skipped)`;
           }
           outputDiv.innerHTML = `<div class='success-message'>${successMessage}</div>`;
+          
+          // Show progress section
+          document.getElementById('progressSection').style.display = 'block';
+          allNumbers = [...validNumbers];
+          
+          // Load saved progress
+          loadSavedProgress();
         }
 
-        validNumbers.forEach(number => {
+        validNumbers.forEach((number, index) => {
           const button = document.createElement('button');
+          button.setAttribute('data-number', number);
           button.innerHTML = `<span class="icon">💬</span> Chat with ${number}`;
           button.onclick = () => openWhatsApp(number, button);
+          
+          // Restore clicked state if previously clicked
+          if (clickedNumbers.has(number)) {
+            button.classList.add('clicked');
+            button.innerHTML = `<span class="icon">✓</span> Sent to ${number}`;
+          }
 
           outputDiv.appendChild(button);
         });
+        
+        // Update progress and suggestions after creating buttons
+        updateProgress();
+        updateNextSuggestion();
 
         // Show invalid numbers if any
         if (invalidNumbers.length > 0) {
@@ -409,7 +651,10 @@
     }
     
     // Initialize counter on page load
-    document.addEventListener('DOMContentLoaded', updateCounter);
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCounter();
+      loadSavedProgress();
+    });
   </script>
 
 </body>
