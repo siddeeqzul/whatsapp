@@ -171,6 +171,32 @@
   </div>
 
   <script>
+    function openWhatsApp(number) {
+      // Detect if user is on mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // Try to open WhatsApp app directly on mobile
+        const appLink = `whatsapp://send?phone=${number}`;
+        const webLink = `https://wa.me/${number}`;
+        
+        // Try to open the app first
+        window.location.href = appLink;
+        
+        // Fallback to web version after a short delay if app doesn't open
+        setTimeout(() => {
+          // Check if the page is still visible (app didn't open)
+          if (!document.hidden) {
+            window.open(webLink, '_blank');
+          }
+        }, 1500);
+      } else {
+        // On desktop, open WhatsApp Web directly
+        const webLink = `https://wa.me/${number}`;
+        window.open(webLink, '_blank');
+      }
+    }
+
     function generateLinks() {
       const input = document.getElementById('phoneInput').value;
       const outputDiv = document.getElementById('output');
@@ -185,11 +211,9 @@
       }
 
       numbers.forEach(number => {
-        const waLink = `https://wa.me/${number}`;
-        
         const button = document.createElement('button');
-        button.innerHTML = `<span class="icon">�</span> Chat with ${number}`;
-        button.onclick = () => window.open(waLink, '_blank');
+        button.innerHTML = `<span class="icon">💬</span> Chat with ${number}`;
+        button.onclick = () => openWhatsApp(number);
 
         outputDiv.appendChild(button);
       });
