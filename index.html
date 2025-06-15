@@ -521,7 +521,7 @@
       Generate WhatsApp Links
     </button>
     
-    <div class="templates-section" id="templatesSection" style="display: none;">
+    <div class="templates-section" id="templatesSection">
       <div class="templates-header">
         <span class="templates-title">📝 Message Templates</span>
         <span class="template-toggle" onclick="toggleTemplatesCollapse()" id="templateToggle">Hide</span>
@@ -1072,8 +1072,7 @@
           }
           outputDiv.innerHTML = `<div class='success-message'>${successMessage}</div>`;
           
-          // Show templates and progress sections
-          document.getElementById('templatesSection').style.display = 'block';
+          // Show progress section
           document.getElementById('progressSection').style.display = 'block';
           allNumbers = [...validNumbers];
           
