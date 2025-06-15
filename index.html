@@ -306,6 +306,184 @@
       font-size: 18px;
     }
     
+    .templates-section {
+      margin: 20px 0;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .templates-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .templates-title {
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+    
+    .template-toggle {
+      font-size: 0.8rem;
+      color: #4299e1;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    
+    .template-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+    
+    .template-select:focus {
+      outline: none;
+      border-color: #25d366;
+    }
+    
+    .template-preview {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      font-size: 0.85rem;
+      color: #4a5568;
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .template-preview.show {
+      display: block;
+    }
+    
+    .custom-template {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 60px;
+      font-family: inherit;
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .custom-template.show {
+      display: block;
+    }
+    
+    .custom-template:focus {
+      outline: none;
+      border-color: #25d366;
+    }
+    
+    .template-tip {
+      font-size: 0.75rem;
+      color: #718096;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .template-management {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .template-btn {
+      padding: 6px 12px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: #4a5568;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+    }
+    
+    .template-btn:hover {
+      border-color: #4299e1;
+      color: #2b6cb0;
+    }
+    
+    .template-btn.danger {
+      color: #e53e3e;
+      border-color: #fed7d7;
+    }
+    
+    .template-btn.danger:hover {
+      background: #fed7d7;
+    }
+    
+    .template-btn.primary {
+      background: #4299e1;
+      color: white;
+      border-color: #3182ce;
+    }
+    
+    .template-btn.primary:hover {
+      background: #3182ce;
+    }
+    
+    .template-edit-mode {
+      background: #fff5d9 !important;
+      border-color: #f6ad55 !important;
+    }
+    
+    .template-form {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 2px solid #4299e1;
+      margin-top: 12px;
+      display: none;
+    }
+    
+    .template-form.show {
+      display: block;
+    }
+    
+    .template-form input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .template-form textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      min-height: 80px;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    
+    .template-form-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    
     @media (max-width: 480px) {
       .container {
         padding: 30px 20px;
@@ -343,6 +521,54 @@
       Generate WhatsApp Links
     </button>
     
+    <div class="templates-section" id="templatesSection" style="display: none;">
+      <div class="templates-header">
+        <span class="templates-title">📝 Message Templates</span>
+        <span class="template-toggle" onclick="toggleTemplatesCollapse()" id="templateToggle">Hide</span>
+      </div>
+      
+      <div id="templateContent">
+        <select class="template-select" id="templateSelect" onchange="handleTemplateChange()">
+          <option value="">Select a template (optional)</option>
+          <option value="greeting">👋 Friendly Greeting</option>
+          <option value="follow-up">📞 Follow-up Message</option>
+          <option value="business">💼 Business Inquiry</option>
+          <option value="reminder">⏰ Gentle Reminder</option>
+          <option value="thank-you">🙏 Thank You Note</option>
+          <option value="invitation">🎉 Event Invitation</option>
+          <option value="custom">✏️ Write Custom Message</option>
+        </select>
+        
+        <div class="template-preview" id="templatePreview"></div>
+        <textarea 
+          class="custom-template" 
+          id="customTemplate" 
+          placeholder="Write your custom message here..."
+          onchange="updateCustomTemplate()"
+        ></textarea>
+        
+        <div class="template-tip">
+          💡 <strong>Tip:</strong> Messages will be pre-filled in WhatsApp. You can still edit them before sending!
+        </div>
+        
+        <div class="template-management">
+          <button class="template-btn" onclick="showAddTemplateForm()">+ Add Template</button>
+          <button class="template-btn" onclick="editCurrentTemplate()" id="editTemplateBtn" style="display: none;">✏️ Edit</button>
+          <button class="template-btn danger" onclick="deleteCurrentTemplate()" id="deleteTemplateBtn" style="display: none;">🗑️ Delete</button>
+        </div>
+        
+        <div class="template-form" id="templateForm">
+          <input type="text" id="templateName" placeholder="Template name (e.g., 'Client Follow-up')" />
+          <input type="text" id="templateEmoji" placeholder="Emoji (e.g., '📞')" maxlength="2" />
+          <textarea id="templateMessage" placeholder="Write your template message here..."></textarea>
+          <div class="template-form-buttons">
+            <button class="template-btn" onclick="cancelTemplateForm()">Cancel</button>
+            <button class="template-btn primary" onclick="saveTemplate()" id="saveTemplateBtn">Save Template</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div id="progressSection" style="display: none;">
       <div class="progress-text" id="progressText">Ready to start messaging</div>
       <div class="progress-bar">
@@ -364,6 +590,239 @@
     let clickedNumbers = new Set();
     let allNumbers = [];
     let autoNextEnabled = true;
+    let selectedTemplate = '';
+    let customMessage = '';
+    let editingTemplateKey = null;
+    
+    // Default message templates
+    const defaultTemplates = {
+      greeting: { name: "Friendly Greeting", emoji: "👋", message: "Hi! Hope you're having a great day! 😊" },
+      'follow-up': { name: "Follow-up Message", emoji: "📞", message: "Hi! Just following up on our previous conversation. Looking forward to hearing from you!" },
+      business: { name: "Business Inquiry", emoji: "💼", message: "Hello! I hope this message finds you well. I wanted to reach out regarding a potential business opportunity." },
+      reminder: { name: "Gentle Reminder", emoji: "⏰", message: "Hi! Just a gentle reminder about our upcoming meeting/event. Please let me know if you have any questions!" },
+      'thank-you': { name: "Thank You Note", emoji: "🙏", message: "Thank you so much for your time and support! It means a lot to me. 🙏" },
+      invitation: { name: "Event Invitation", emoji: "🎉", message: "Hi! You're invited to our special event! Would love to have you join us. Details to follow! 🎉" }
+    };
+    
+    // Load custom templates from localStorage
+    function loadCustomTemplates() {
+      const saved = localStorage.getItem('whatsapp_custom_templates');
+      return saved ? JSON.parse(saved) : {};
+    }
+    
+    // Save custom templates to localStorage
+    function saveCustomTemplates(templates) {
+      localStorage.setItem('whatsapp_custom_templates', JSON.stringify(templates));
+    }
+    
+    // Get all templates (default + custom)
+    function getAllTemplates() {
+      const customTemplates = loadCustomTemplates();
+      return { ...defaultTemplates, ...customTemplates };
+    }
+    
+    // Rebuild template dropdown
+    function rebuildTemplateSelect() {
+      const select = document.getElementById('templateSelect');
+      const currentValue = select.value;
+      
+      // Clear existing options except the first one
+      select.innerHTML = '<option value="">Select a template (optional)</option>';
+      
+      const allTemplates = getAllTemplates();
+      
+      // Add all templates
+      Object.keys(allTemplates).forEach(key => {
+        const template = allTemplates[key];
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = `${template.emoji} ${template.name}`;
+        select.appendChild(option);
+      });
+      
+      // Add custom option
+      const customOption = document.createElement('option');
+      customOption.value = 'custom';
+      customOption.textContent = '✏️ Write Custom Message';
+      select.appendChild(customOption);
+      
+      // Restore previous selection if it still exists
+      if (currentValue && document.querySelector(`option[value="${currentValue}"]`)) {
+        select.value = currentValue;
+      }
+    }
+    
+    // Show add template form
+    function showAddTemplateForm() {
+      editingTemplateKey = null;
+      document.getElementById('templateName').value = '';
+      document.getElementById('templateEmoji').value = '';
+      document.getElementById('templateMessage').value = '';
+      document.getElementById('saveTemplateBtn').textContent = 'Save Template';
+      document.getElementById('templateForm').classList.add('show');
+    }
+    
+    // Edit current template
+    function editCurrentTemplate() {
+      const allTemplates = getAllTemplates();
+      const template = allTemplates[selectedTemplate];
+      
+      if (!template) return;
+      
+      editingTemplateKey = selectedTemplate;
+      document.getElementById('templateName').value = template.name;
+      document.getElementById('templateEmoji').value = template.emoji;
+      document.getElementById('templateMessage').value = template.message;
+      document.getElementById('saveTemplateBtn').textContent = 'Update Template';
+      document.getElementById('templateForm').classList.add('show');
+    }
+    
+    // Delete current template
+    function deleteCurrentTemplate() {
+      if (!selectedTemplate || !confirm(`Are you sure you want to delete the "${getAllTemplates()[selectedTemplate].name}" template?`)) {
+        return;
+      }
+      
+      // Can't delete default templates, only custom ones
+      const customTemplates = loadCustomTemplates();
+      if (customTemplates[selectedTemplate]) {
+        delete customTemplates[selectedTemplate];
+        saveCustomTemplates(customTemplates);
+        rebuildTemplateSelect();
+        
+        // Reset selection
+        document.getElementById('templateSelect').value = '';
+        handleTemplateChange();
+        
+        showStatus('Template deleted successfully! 🗑️', true);
+      } else {
+        showStatus('Cannot delete built-in templates. You can only delete custom templates.', false);
+      }
+    }
+    
+    // Save template
+    function saveTemplate() {
+      const name = document.getElementById('templateName').value.trim();
+      const emoji = document.getElementById('templateEmoji').value.trim();
+      const message = document.getElementById('templateMessage').value.trim();
+      
+      if (!name || !message) {
+        showStatus('Please fill in both template name and message.', false);
+        return;
+      }
+      
+      const customTemplates = loadCustomTemplates();
+      
+      // Generate key (use existing key if editing, or create new one)
+      let key = editingTemplateKey;
+      if (!key) {
+        key = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        // Ensure unique key
+        let counter = 1;
+        const originalKey = key;
+        while (getAllTemplates()[key]) {
+          key = `${originalKey}-${counter}`;
+          counter++;
+        }
+      }
+      
+      customTemplates[key] = {
+        name: name,
+        emoji: emoji || '📝',
+        message: message
+      };
+      
+      saveCustomTemplates(customTemplates);
+      rebuildTemplateSelect();
+      
+      // Select the new/edited template
+      document.getElementById('templateSelect').value = key;
+      handleTemplateChange();
+      
+      cancelTemplateForm();
+      
+      const action = editingTemplateKey ? 'updated' : 'saved';
+      showStatus(`Template ${action} successfully! ✅`, true);
+    }
+    
+    // Cancel template form
+    function cancelTemplateForm() {
+      document.getElementById('templateForm').classList.remove('show');
+      editingTemplateKey = null;
+    }
+    
+    function updateTemplateButtons() {
+      const editBtn = document.getElementById('editTemplateBtn');
+      const deleteBtn = document.getElementById('deleteTemplateBtn');
+      
+      if (selectedTemplate && selectedTemplate !== 'custom') {
+        editBtn.style.display = 'inline-block';
+        
+        // Only show delete for custom templates
+        const customTemplates = loadCustomTemplates();
+        deleteBtn.style.display = customTemplates[selectedTemplate] ? 'inline-block' : 'none';
+      } else {
+        editBtn.style.display = 'none';
+        deleteBtn.style.display = 'none';
+      }
+    }
+    
+    function toggleTemplatesCollapse() {
+      const content = document.getElementById('templateContent');
+      const toggle = document.getElementById('templateToggle');
+      
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggle.textContent = 'Hide';
+      } else {
+        content.style.display = 'none';
+        toggle.textContent = 'Show';
+      }
+    }
+    
+    function handleTemplateChange() {
+      const select = document.getElementById('templateSelect');
+      const preview = document.getElementById('templatePreview');
+      const customTextarea = document.getElementById('customTemplate');
+      
+      selectedTemplate = select.value;
+      
+      if (selectedTemplate === 'custom') {
+        customTextarea.classList.add('show');
+        preview.classList.remove('show');
+      } else {
+        customTextarea.classList.remove('show');
+        
+        if (selectedTemplate) {
+          const allTemplates = getAllTemplates();
+          const template = allTemplates[selectedTemplate];
+          
+          if (template) {
+            preview.innerHTML = `<strong>Preview:</strong><br>"${template.message}"`;
+            preview.classList.add('show');
+          }
+        } else {
+          preview.classList.remove('show');
+        }
+      }
+      
+      updateTemplateButtons();
+    }
+    
+    function updateCustomTemplate() {
+      customMessage = document.getElementById('customTemplate').value;
+    }
+    
+    function getCurrentMessage() {
+      if (selectedTemplate === 'custom') {
+        return customMessage;
+      } else if (selectedTemplate) {
+        const allTemplates = getAllTemplates();
+        const template = allTemplates[selectedTemplate];
+        return template ? template.message : '';
+      }
+      return '';
+    }
     
     function showStatus(message, isSuccess = false) {
       const status = document.getElementById('status');
@@ -528,13 +987,17 @@
       setButtonLoading(button, true);
       showStatus(`Opening WhatsApp for ${number}...`);
       
+      // Get current message template
+      const message = getCurrentMessage();
+      const encodedMessage = message ? encodeURIComponent(message) : '';
+      
       // Detect if user is on mobile device
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
       if (isMobile) {
         // Try to open WhatsApp app directly on mobile
-        const appLink = `whatsapp://send?phone=${number}`;
-        const webLink = `https://wa.me/${number}`;
+        const appLink = `whatsapp://send?phone=${number}${encodedMessage ? `&text=${encodedMessage}` : ''}`;
+        const webLink = `https://wa.me/${number}${encodedMessage ? `?text=${encodedMessage}` : ''}`;
         
         // Try to open the app first
         window.location.href = appLink;
@@ -544,9 +1007,9 @@
           // Check if the page is still visible (app didn't open)
           if (!document.hidden) {
             window.open(webLink, '_blank');
-            showStatus(`WhatsApp Web opened for ${number}. Mark as done when finished! ✅`, true);
+            showStatus(`WhatsApp Web opened for ${number}${message ? ' with template message' : ''}. Mark as done when finished! ✅`, true);
           } else {
-            showStatus(`WhatsApp app opened for ${number}. Mark as done when finished! ✅`, true);
+            showStatus(`WhatsApp app opened for ${number}${message ? ' with template message' : ''}. Mark as done when finished! ✅`, true);
           }
           setButtonLoading(button, false);
           
@@ -557,9 +1020,9 @@
         }, 1500);
       } else {
         // On desktop, open WhatsApp Web directly
-        const webLink = `https://wa.me/${number}`;
+        const webLink = `https://wa.me/${number}${encodedMessage ? `?text=${encodedMessage}` : ''}`;
         window.open(webLink, '_blank');
-        showStatus(`WhatsApp Web opened for ${number}. Mark as done when finished! ✅`, true);
+        showStatus(`WhatsApp Web opened for ${number}${message ? ' with template message' : ''}. Mark as done when finished! ✅`, true);
         
         setTimeout(() => {
           setButtonLoading(button, false);
@@ -609,7 +1072,8 @@
           }
           outputDiv.innerHTML = `<div class='success-message'>${successMessage}</div>`;
           
-          // Show progress section
+          // Show templates and progress sections
+          document.getElementById('templatesSection').style.display = 'block';
           document.getElementById('progressSection').style.display = 'block';
           allNumbers = [...validNumbers];
           
@@ -654,6 +1118,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       updateCounter();
       loadSavedProgress();
+      rebuildTemplateSelect();
     });
   </script>
 
