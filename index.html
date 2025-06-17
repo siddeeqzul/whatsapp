@@ -1,1125 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WhatsApp Sender</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      padding: 40px;
-      max-width: 500px;
-      width: 90%;
-      margin: 20px;
-    }
-    
-    h2 {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #2d3748;
-      margin: 0 0 30px 0;
-      text-align: center;
-      background: linear-gradient(135deg, #25d366, #128c7e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    label {
-      display: block;
-      font-weight: 600;
-      color: #4a5568;
-      margin-bottom: 8px;
-      font-size: 0.95rem;
-    }
-    
-    textarea {
-      width: 100%;
-      padding: 16px;
-      margin-bottom: 20px;
-      font-size: 16px;
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
-      font-family: inherit;
-      resize: vertical;
-      transition: all 0.2s ease;
-      background: #f8fafc;
-    }
-    
-    textarea:focus {
-      outline: none;
-      border-color: #25d366;
-      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
-      background: white;
-    }
-    
-    textarea::placeholder {
-      color: #a0aec0;
-    }
-    
-    .generate-btn {
-      width: 100%;
-      padding: 16px 24px;
-      background: linear-gradient(135deg, #25d366, #128c7e);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-      margin-bottom: 30px;
-    }
-    
-    .generate-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
-    }
-    
-    .generate-btn:active {
-      transform: translateY(0);
-    }
-    
-    .buttons-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    
-    .buttons-container button {
-      padding: 14px 20px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    
-    .buttons-container button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    .buttons-container button:active {
-      transform: translateY(0);
-    }
-    
-    .buttons-container button.clicked {
-      background: linear-gradient(135deg, #38a169, #2f855a);
-      opacity: 0.8;
-      position: relative;
-    }
-    
-    .buttons-container button.clicked::after {
-      content: '✓';
-      position: absolute;
-      top: 8px;
-      right: 12px;
-      color: white;
-      font-weight: bold;
-      font-size: 16px;
-    }
-    
-    .buttons-container button.next-suggested {
-      background: linear-gradient(135deg, #ed8936, #dd6b20);
-      animation: pulse 2s infinite;
-      border: 2px solid #fed7aa;
-    }
-    
-    @keyframes pulse {
-      0% { box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3); }
-      50% { box-shadow: 0 8px 20px rgba(237, 137, 54, 0.6); }
-      100% { box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3); }
-    }
-    
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #e2e8f0;
-      border-radius: 4px;
-      margin: 20px 0;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #25d366, #128c7e);
-      transition: width 0.3s ease;
-      border-radius: 4px;
-    }
-    
-    .progress-text {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #4a5568;
-      margin-bottom: 15px;
-    }
-    
-    .workflow-controls {
-      display: flex;
-      gap: 10px;
-      margin: 20px 0;
-      justify-content: center;
-    }
-    
-    .workflow-btn {
-      padding: 8px 16px;
-      border: 2px solid #e2e8f0;
-      background: white;
-      color: #4a5568;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-    
-    .workflow-btn:hover {
-      border-color: #4299e1;
-      color: #2b6cb0;
-    }
-    
-    .workflow-btn.active {
-      background: #4299e1;
-      color: white;
-      border-color: #3182ce;
-    }
-    
-    .completion-message {
-      background: linear-gradient(135deg, #68d391, #38a169);
-      color: white;
-      padding: 16px;
-      border-radius: 12px;
-      text-align: center;
-      margin: 20px 0;
-      font-weight: 600;
-    }
-    
-    .error-message {
-      background: #fed7d7;
-      color: #c53030;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-top: 10px;
-      border-left: 4px solid #e53e3e;
-    }
-    
-    .success-message {
-      background: #c6f6d5;
-      color: #2f855a;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 20px;
-      border-left: 4px solid #38a169;
-    }
-    
-    .loading {
-      opacity: 0.7;
-      pointer-events: none;
-      position: relative;
-    }
-    
-    .loading::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 20px;
-      height: 20px;
-      margin: -10px 0 0 -10px;
-      border: 2px solid #ffffff;
-      border-radius: 50%;
-      border-top-color: transparent;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    .input-container {
-      position: relative;
-    }
-    
-    .input-help {
-      font-size: 0.85rem;
-      color: #718096;
-      margin-bottom: 15px;
-      padding: 8px 12px;
-      background: #f7fafc;
-      border-radius: 6px;
-      border-left: 3px solid #4299e1;
-    }
-    
-    .counter {
-      position: absolute;
-      bottom: 8px;
-      right: 12px;
-      font-size: 0.8rem;
-      color: #a0aec0;
-      background: white;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    
-    .button-status {
-      font-size: 0.8rem;
-      color: #4a5568;
-      text-align: center;
-      margin-top: 5px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .button-status.show {
-      opacity: 1;
-    }
-    
-    .icon {
-      font-size: 18px;
-    }
-    
-    .templates-section {
-      margin: 20px 0;
-      padding: 16px;
-      background: #f8fafc;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-    }
-    
-    .templates-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    
-    .templates-title {
-      font-weight: 600;
-      color: #4a5568;
-      font-size: 0.95rem;
-    }
-    
-    .template-toggle {
-      font-size: 0.8rem;
-      color: #4299e1;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    
-    .template-select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 10px;
-      background: white;
-      cursor: pointer;
-      transition: border-color 0.2s ease;
-    }
-    
-    .template-select:focus {
-      outline: none;
-      border-color: #25d366;
-    }
-    
-    .template-preview {
-      background: white;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      font-size: 0.85rem;
-      color: #4a5568;
-      margin-top: 8px;
-      display: none;
-    }
-    
-    .template-preview.show {
-      display: block;
-    }
-    
-    .custom-template {
-      width: 100%;
-      padding: 10px 12px;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 14px;
-      resize: vertical;
-      min-height: 60px;
-      font-family: inherit;
-      margin-top: 8px;
-      display: none;
-    }
-    
-    .custom-template.show {
-      display: block;
-    }
-    
-    .custom-template:focus {
-      outline: none;
-      border-color: #25d366;
-    }
-    
-    .template-tip {
-      font-size: 0.75rem;
-      color: #718096;
-      margin-top: 5px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .template-management {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    
-    .template-btn {
-      padding: 6px 12px;
-      border: 1px solid #e2e8f0;
-      background: white;
-      color: #4a5568;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: all 0.2s ease;
-    }
-    
-    .template-btn:hover {
-      border-color: #4299e1;
-      color: #2b6cb0;
-    }
-    
-    .template-btn.danger {
-      color: #e53e3e;
-      border-color: #fed7d7;
-    }
-    
-    .template-btn.danger:hover {
-      background: #fed7d7;
-    }
-    
-    .template-btn.primary {
-      background: #4299e1;
-      color: white;
-      border-color: #3182ce;
-    }
-    
-    .template-btn.primary:hover {
-      background: #3182ce;
-    }
-    
-    .template-edit-mode {
-      background: #fff5d9 !important;
-      border-color: #f6ad55 !important;
-    }
-    
-    .template-form {
-      background: white;
-      padding: 16px;
-      border-radius: 8px;
-      border: 2px solid #4299e1;
-      margin-top: 12px;
-      display: none;
-    }
-    
-    .template-form.show {
-      display: block;
-    }
-    
-    .template-form input {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
-    }
-    
-    .template-form textarea {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      min-height: 80px;
-      resize: vertical;
-      font-family: inherit;
-      font-size: 0.9rem;
-    }
-    
-    .template-form-buttons {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-    }
-    
-    @media (max-width: 480px) {
-      .container {
-        padding: 30px 20px;
-        margin: 10px;
-      }
-      
-      h2 {
-        font-size: 1.7rem;
-      }
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Bulk Sender - Professional Messaging Tool</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <div class="container">
-    <h2>WhatsApp Sender</h2>
-    
-    <div class="input-container">
-      <label for="phoneInput">Enter phone number(s):</label>
-      <div class="input-help">
-        📱 Supported format: Malaysian numbers starting with 601 (e.g., 60123456789)<br>
-        ✨ You can enter multiple numbers separated by commas, spaces, or new lines
-      </div>
-      <textarea 
-        id="phoneInput" 
-        rows="4" 
-        placeholder="60123456789 or multiple like:&#10;60123456789&#10;601112345678&#10;60133334444"
-        oninput="updateCounter()"
-        onkeydown="handleKeyDown(event)"
-      ></textarea>
-      <div class="counter" id="counter">0 numbers</div>
-    </div>
-    
-    <button class="generate-btn" onclick="generateLinks()" id="generateBtn">
-      <span class="icon">🚀</span>
-      Generate WhatsApp Links
-    </button>
-    
-    <div class="templates-section" id="templatesSection">
-      <div class="templates-header">
-        <span class="templates-title">📝 Message Templates</span>
-        <span class="template-toggle" onclick="toggleTemplatesCollapse()" id="templateToggle">Hide</span>
-      </div>
+
+<body class="bg-light">
+  <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center p-3">
+    <div class="main-container p-4 my-3">
       
-      <div id="templateContent">
-        <select class="template-select" id="templateSelect" onchange="handleTemplateChange()">
-          <option value="">Select a template (optional)</option>
-          <option value="greeting">👋 Friendly Greeting</option>
-          <option value="follow-up">📞 Follow-up Message</option>
-          <option value="business">💼 Business Inquiry</option>
-          <option value="reminder">⏰ Gentle Reminder</option>
-          <option value="thank-you">🙏 Thank You Note</option>
-          <option value="invitation">🎉 Event Invitation</option>
-          <option value="custom">✏️ Write Custom Message</option>
-        </select>
-        
-        <div class="template-preview" id="templatePreview"></div>
-        <textarea 
-          class="custom-template" 
-          id="customTemplate" 
-          placeholder="Write your custom message here..."
-          onchange="updateCustomTemplate()"
-        ></textarea>
-        
-        <div class="template-tip">
-          💡 <strong>Tip:</strong> Messages will be pre-filled in WhatsApp. You can still edit them before sending!
-        </div>
-        
-        <div class="template-management">
-          <button class="template-btn" onclick="showAddTemplateForm()">+ Add Template</button>
-          <button class="template-btn" onclick="editCurrentTemplate()" id="editTemplateBtn" style="display: none;">✏️ Edit</button>
-          <button class="template-btn danger" onclick="deleteCurrentTemplate()" id="deleteTemplateBtn" style="display: none;">🗑️ Delete</button>
-        </div>
-        
-        <div class="template-form" id="templateForm">
-          <input type="text" id="templateName" placeholder="Template name (e.g., 'Client Follow-up')" />
-          <input type="text" id="templateEmoji" placeholder="Emoji (e.g., '📞')" maxlength="2" />
-          <textarea id="templateMessage" placeholder="Write your template message here..."></textarea>
-          <div class="template-form-buttons">
-            <button class="template-btn" onclick="cancelTemplateForm()">Cancel</button>
-            <button class="template-btn primary" onclick="saveTemplate()" id="saveTemplateBtn">Save Template</button>
+      <!-- App Header -->
+      <div class="text-center mb-4">
+        <h1 class="app-header display-5 mb-1">
+          <i class="bi bi-whatsapp"></i> WhatsApp Bulk Sender
+        </h1>
+        <p class="text-muted">Professional messaging tool for systematic contact management</p>
+      </div>
+
+      <!-- Progress Stepper -->
+      <div class="stepper-custom mb-4" id="stepper">
+        <div class="row text-center g-2">
+          <div class="col-3">
+            <div class="step-pending" id="step-input">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-telephone-plus"></i>
+              </div>
+              <small class="text-muted fw-medium">Input</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-template">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-chat-text"></i>
+              </div>
+              <small class="text-muted fw-medium">Template</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-progress">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-graph-up"></i>
+              </div>
+              <small class="text-muted fw-medium">Progress</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-report">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-file-earmark-check"></i>
+              </div>
+              <small class="text-muted fw-medium">Report</small>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    <div id="progressSection" style="display: none;">
-      <div class="progress-text" id="progressText">Ready to start messaging</div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-      </div>
       
-      <div class="workflow-controls">
-        <button class="workflow-btn" onclick="resetProgress()">↻ Reset All</button>
-        <button class="workflow-btn" onclick="markAllDone()">✓ Mark All Done</button>
-        <button class="workflow-btn active" onclick="toggleAutoNext()" id="autoNextBtn">⚡ Auto-suggest Next</button>
-      </div>
-    </div>
-    
-    <div class="buttons-container" id="output"></div>
-    <div class="button-status" id="status"></div>
-  </div>
-
-  <script>
-    let clickedNumbers = new Set();
-    let allNumbers = [];
-    let autoNextEnabled = true;
-    let selectedTemplate = '';
-    let customMessage = '';
-    let editingTemplateKey = null;
-    
-    // Default message templates
-    const defaultTemplates = {
-      greeting: { name: "Friendly Greeting", emoji: "👋", message: "Hi! Hope you're having a great day! 😊" },
-      'follow-up': { name: "Follow-up Message", emoji: "📞", message: "Hi! Just following up on our previous conversation. Looking forward to hearing from you!" },
-      business: { name: "Business Inquiry", emoji: "💼", message: "Hello! I hope this message finds you well. I wanted to reach out regarding a potential business opportunity." },
-      reminder: { name: "Gentle Reminder", emoji: "⏰", message: "Hi! Just a gentle reminder about our upcoming meeting/event. Please let me know if you have any questions!" },
-      'thank-you': { name: "Thank You Note", emoji: "🙏", message: "Thank you so much for your time and support! It means a lot to me. 🙏" },
-      invitation: { name: "Event Invitation", emoji: "🎉", message: "Hi! You're invited to our special event! Would love to have you join us. Details to follow! 🎉" }
-    };
-    
-    // Load custom templates from localStorage
-    function loadCustomTemplates() {
-      const saved = localStorage.getItem('whatsapp_custom_templates');
-      return saved ? JSON.parse(saved) : {};
-    }
-    
-    // Save custom templates to localStorage
-    function saveCustomTemplates(templates) {
-      localStorage.setItem('whatsapp_custom_templates', JSON.stringify(templates));
-    }
-    
-    // Get all templates (default + custom)
-    function getAllTemplates() {
-      const customTemplates = loadCustomTemplates();
-      return { ...defaultTemplates, ...customTemplates };
-    }
-    
-    // Rebuild template dropdown
-    function rebuildTemplateSelect() {
-      const select = document.getElementById('templateSelect');
-      const currentValue = select.value;
-      
-      // Clear existing options except the first one
-      select.innerHTML = '<option value="">Select a template (optional)</option>';
-      
-      const allTemplates = getAllTemplates();
-      
-      // Add all templates
-      Object.keys(allTemplates).forEach(key => {
-        const template = allTemplates[key];
-        const option = document.createElement('option');
-        option.value = key;
-        option.textContent = `${template.emoji} ${template.name}`;
-        select.appendChild(option);
-      });
-      
-      // Add custom option
-      const customOption = document.createElement('option');
-      customOption.value = 'custom';
-      customOption.textContent = '✏️ Write Custom Message';
-      select.appendChild(customOption);
-      
-      // Restore previous selection if it still exists
-      if (currentValue && document.querySelector(`option[value="${currentValue}"]`)) {
-        select.value = currentValue;
-      }
-    }
-    
-    // Show add template form
-    function showAddTemplateForm() {
-      editingTemplateKey = null;
-      document.getElementById('templateName').value = '';
-      document.getElementById('templateEmoji').value = '';
-      document.getElementById('templateMessage').value = '';
-      document.getElementById('saveTemplateBtn').textContent = 'Save Template';
-      document.getElementById('templateForm').classList.add('show');
-    }
-    
-    // Edit current template
-    function editCurrentTemplate() {
-      const allTemplates = getAllTemplates();
-      const template = allTemplates[selectedTemplate];
-      
-      if (!template) return;
-      
-      editingTemplateKey = selectedTemplate;
-      document.getElementById('templateName').value = template.name;
-      document.getElementById('templateEmoji').value = template.emoji;
-      document.getElementById('templateMessage').value = template.message;
-      document.getElementById('saveTemplateBtn').textContent = 'Update Template';
-      document.getElementById('templateForm').classList.add('show');
-    }
-    
-    // Delete current template
-    function deleteCurrentTemplate() {
-      if (!selectedTemplate || !confirm(`Are you sure you want to delete the "${getAllTemplates()[selectedTemplate].name}" template?`)) {
-        return;
-      }
-      
-      // Can't delete default templates, only custom ones
-      const customTemplates = loadCustomTemplates();
-      if (customTemplates[selectedTemplate]) {
-        delete customTemplates[selectedTemplate];
-        saveCustomTemplates(customTemplates);
-        rebuildTemplateSelect();
-        
-        // Reset selection
-        document.getElementById('templateSelect').value = '';
-        handleTemplateChange();
-        
-        showStatus('Template deleted successfully! 🗑️', true);
-      } else {
-        showStatus('Cannot delete built-in templates. You can only delete custom templates.', false);
-      }
-    }
-    
-    // Save template
-    function saveTemplate() {
-      const name = document.getElementById('templateName').value.trim();
-      const emoji = document.getElementById('templateEmoji').value.trim();
-      const message = document.getElementById('templateMessage').value.trim();
-      
-      if (!name || !message) {
-        showStatus('Please fill in both template name and message.', false);
-        return;
-      }
-      
-      const customTemplates = loadCustomTemplates();
-      
-      // Generate key (use existing key if editing, or create new one)
-      let key = editingTemplateKey;
-      if (!key) {
-        key = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
-        // Ensure unique key
-        let counter = 1;
-        const originalKey = key;
-        while (getAllTemplates()[key]) {
-          key = `${originalKey}-${counter}`;
-          counter++;
-        }
-      }
-      
-      customTemplates[key] = {
-        name: name,
-        emoji: emoji || '📝',
-        message: message
-      };
-      
-      saveCustomTemplates(customTemplates);
-      rebuildTemplateSelect();
-      
-      // Select the new/edited template
-      document.getElementById('templateSelect').value = key;
-      handleTemplateChange();
-      
-      cancelTemplateForm();
-      
-      const action = editingTemplateKey ? 'updated' : 'saved';
-      showStatus(`Template ${action} successfully! ✅`, true);
-    }
-    
-    // Cancel template form
-    function cancelTemplateForm() {
-      document.getElementById('templateForm').classList.remove('show');
-      editingTemplateKey = null;
-    }
-    
-    function updateTemplateButtons() {
-      const editBtn = document.getElementById('editTemplateBtn');
-      const deleteBtn = document.getElementById('deleteTemplateBtn');
-      
-      if (selectedTemplate && selectedTemplate !== 'custom') {
-        editBtn.style.display = 'inline-block';
-        
-        // Only show delete for custom templates
-        const customTemplates = loadCustomTemplates();
-        deleteBtn.style.display = customTemplates[selectedTemplate] ? 'inline-block' : 'none';
-      } else {
-        editBtn.style.display = 'none';
-        deleteBtn.style.display = 'none';
-      }
-    }
-    
-    function toggleTemplatesCollapse() {
-      const content = document.getElementById('templateContent');
-      const toggle = document.getElementById('templateToggle');
-      
-      if (content.style.display === 'none') {
-        content.style.display = 'block';
-        toggle.textContent = 'Hide';
-      } else {
-        content.style.display = 'none';
-        toggle.textContent = 'Show';
-      }
-    }
-    
-    function handleTemplateChange() {
-      const select = document.getElementById('templateSelect');
-      const preview = document.getElementById('templatePreview');
-      const customTextarea = document.getElementById('customTemplate');
-      
-      selectedTemplate = select.value;
-      
-      if (selectedTemplate === 'custom') {
-        customTextarea.classList.add('show');
-        preview.classList.remove('show');
-      } else {
-        customTextarea.classList.remove('show');
-        
-        if (selectedTemplate) {
-          const allTemplates = getAllTemplates();
-          const template = allTemplates[selectedTemplate];
+      <!-- Phone Input Section -->
+      <div class="card shadow-sm mb-4 hover-lift">
+        <div class="card-body">
+          <h5 class="card-title d-flex align-items-center mb-3">
+            <i class="bi bi-telephone-fill text-success me-2"></i> 
+            Enter Phone Numbers
+          </h5>
           
-          if (template) {
-            preview.innerHTML = `<strong>Preview:</strong><br>"${template.message}"`;
-            preview.classList.add('show');
-          }
-        } else {
-          preview.classList.remove('show');
-        }
-      }
-      
-      updateTemplateButtons();
-    }
-    
-    function updateCustomTemplate() {
-      customMessage = document.getElementById('customTemplate').value;
-    }
-    
-    function getCurrentMessage() {
-      if (selectedTemplate === 'custom') {
-        return customMessage;
-      } else if (selectedTemplate) {
-        const allTemplates = getAllTemplates();
-        const template = allTemplates[selectedTemplate];
-        return template ? template.message : '';
-      }
-      return '';
-    }
-    
-    function showStatus(message, isSuccess = false) {
-      const status = document.getElementById('status');
-      status.textContent = message;
-      status.className = `button-status show ${isSuccess ? 'success' : ''}`;
-      
-      setTimeout(() => {
-        status.classList.remove('show');
-      }, 3000);
-    }
-    
-    function updateProgress() {
-      const total = allNumbers.length;
-      const completed = clickedNumbers.size;
-      const percentage = total > 0 ? (completed / total) * 100 : 0;
-      
-      document.getElementById('progressFill').style.width = `${percentage}%`;
-      
-      if (completed === 0) {
-        document.getElementById('progressText').textContent = `Ready to start messaging (0/${total})`;
-      } else if (completed === total) {
-        document.getElementById('progressText').innerHTML = `🎉 All messages sent! (${completed}/${total})`;
-        showCompletionMessage();
-      } else {
-        document.getElementById('progressText').textContent = `Progress: ${completed}/${total} contacts messaged`;
-      }
-    }
-    
-    function showCompletionMessage() {
-      const output = document.getElementById('output');
-      const existingCompletion = output.querySelector('.completion-message');
-      
-      if (!existingCompletion) {
-        const completionDiv = document.createElement('div');
-        completionDiv.className = 'completion-message';
-        completionDiv.innerHTML = `
-          🎉 <strong>All Done!</strong> You've messaged all ${allNumbers.length} contacts.<br>
-          <small>Great job on staying organized! 💪</small>
-        `;
-        output.insertBefore(completionDiv, output.firstChild);
-      }
-    }
-    
-    function getNextSuggestedButton() {
-      if (!autoNextEnabled) return null;
-      
-      const buttons = document.querySelectorAll('.buttons-container button:not(.clicked)');
-      return buttons.length > 0 ? buttons[0] : null;
-    }
-    
-    function updateNextSuggestion() {
-      // Remove previous suggestion
-      document.querySelectorAll('.next-suggested').forEach(btn => {
-        btn.classList.remove('next-suggested');
-      });
-      
-      // Add suggestion to next button
-      const nextBtn = getNextSuggestedButton();
-      if (nextBtn && autoNextEnabled) {
-        nextBtn.classList.add('next-suggested');
-      }
-    }
-    
-    function markButtonAsClicked(button, number) {
-      clickedNumbers.add(number);
-      button.classList.add('clicked');
-      button.innerHTML = `<span class="icon">✓</span> Sent to ${number}`;
-      
-      updateProgress();
-      updateNextSuggestion();
-      
-      // Save progress to localStorage
-      localStorage.setItem('whatsapp_clicked_numbers', JSON.stringify([...clickedNumbers]));
-    }
-    
-    function resetProgress() {
-      clickedNumbers.clear();
-      document.querySelectorAll('.buttons-container button').forEach(btn => {
-        btn.classList.remove('clicked', 'next-suggested');
-        const number = btn.getAttribute('data-number');
-        btn.innerHTML = `<span class="icon">💬</span> Chat with ${number}`;
-      });
-      
-      document.querySelector('.completion-message')?.remove();
-      updateProgress();
-      updateNextSuggestion();
-      localStorage.removeItem('whatsapp_clicked_numbers');
-      showStatus('Progress reset! Ready to start fresh 🔄');
-    }
-    
-    function markAllDone() {
-      allNumbers.forEach(number => clickedNumbers.add(number));
-      document.querySelectorAll('.buttons-container button').forEach(btn => {
-        const number = btn.getAttribute('data-number');
-        markButtonAsClicked(btn, number);
-      });
-      showStatus('All contacts marked as completed! 🎉', true);
-    }
-    
-    function toggleAutoNext() {
-      autoNextEnabled = !autoNextEnabled;
-      const btn = document.getElementById('autoNextBtn');
-      
-      if (autoNextEnabled) {
-        btn.classList.add('active');
-        btn.innerHTML = '⚡ Auto-suggest Next';
-        updateNextSuggestion();
-      } else {
-        btn.classList.remove('active');
-        btn.innerHTML = '⚡ Auto-suggest Off';
-        document.querySelectorAll('.next-suggested').forEach(b => b.classList.remove('next-suggested'));
-      }
-    }
-    
-    function loadSavedProgress() {
-      const saved = localStorage.getItem('whatsapp_clicked_numbers');
-      if (saved) {
-        clickedNumbers = new Set(JSON.parse(saved));
-      }
-    }
-    
-    function updateCounter() {
-      const input = document.getElementById('phoneInput').value;
-      const numbers = input.split(/[\s,]+/).map(num => num.trim()).filter(num => /^601\d{7,9}$/.test(num));
-      const counter = document.getElementById('counter');
-      
-      if (input.trim() === '') {
-        counter.textContent = '0 numbers';
-      } else {
-        const validCount = numbers.length;
-        const totalEntered = input.split(/[\s,]+/).map(num => num.trim()).filter(num => num !== '').length;
-        
-        if (validCount === totalEntered && validCount > 0) {
-          counter.textContent = `${validCount} valid number${validCount !== 1 ? 's' : ''}`;
-          counter.style.color = '#38a169';
-        } else {
-          counter.textContent = `${validCount}/${totalEntered} valid`;
-          counter.style.color = validCount > 0 ? '#d69e2e' : '#e53e3e';
-        }
-      }
-    }
-    
-    function handleKeyDown(event) {
-      // Allow Ctrl/Cmd + Enter to generate links
-      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-        event.preventDefault();
-        generateLinks();
-      }
-    }
-    
-    function setButtonLoading(button, loading) {
-      if (loading) {
-        button.classList.add('loading');
-        button.disabled = true;
-      } else {
-        button.classList.remove('loading');
-        button.disabled = false;
-      }
-    }
-
-    function openWhatsApp(number, button) {
-      setButtonLoading(button, true);
-      showStatus(`Opening WhatsApp for ${number}...`);
-      
-      // Get current message template
-      const message = getCurrentMessage();
-      const encodedMessage = message ? encodeURIComponent(message) : '';
-      
-      // Detect if user is on mobile device
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        // Try to open WhatsApp app directly on mobile
-        const appLink = `whatsapp://send?phone=${number}${encodedMessage ? `&text=${encodedMessage}` : ''}`;
-        const webLink = `https://wa.me/${number}${encodedMessage ? `?text=${encodedMessage}` : ''}`;
-        
-        // Try to open the app first
-        window.location.href = appLink;
-        
-        // Fallback to web version after a short delay if app doesn't open
-        setTimeout(() => {
-          // Check if the page is still visible (app didn't open)
-          if (!document.hidden) {
-            window.open(webLink, '_blank');
-            showStatus(`WhatsApp Web opened for ${number}${message ? ' with template message' : ''}. Mark as done when finished! ✅`, true);
-          } else {
-            showStatus(`WhatsApp app opened for ${number}${message ? ' with template message' : ''}. Mark as done when finished! ✅`, true);
-          }
-          setButtonLoading(button, false);
-          
-          // Auto-mark as clicked after opening
-          setTimeout(() => {
-            markButtonAsClicked(button, number);
-          }, 2000);
-        }, 1500);
-      } else {
-        // On desktop, open WhatsApp Web directly
-        const webLink = `https://wa.me/${number}${encodedMessage ? `?text=${encodedMessage}` : ''}`;
-        window.open(webLink, '_blank');
-        showStatus(`WhatsApp Web opened for ${number}${message ? ' with template message' : ''}. Mark as done when finished! ✅`, true);
-        
-        setTimeout(() => {
-          setButtonLoading(button, false);
-          // Auto-mark as clicked after opening
-          markButtonAsClicked(button, number);
-        }, 1000);
-      }
-    }
-
-    function generateLinks() {
-      const input = document.getElementById('phoneInput').value;
-      const outputDiv = document.getElementById('output');
-      const generateBtn = document.getElementById('generateBtn');
-      
-      setButtonLoading(generateBtn, true);
-      outputDiv.innerHTML = ''; // clear previous output
-
-      // Split by comma, space, or newline
-      const allEntries = input.split(/[\s,]+/).map(num => num.trim()).filter(num => num !== '');
-      const validNumbers = allEntries.filter(num => /^601\d{7,9}$/.test(num));
-      const invalidNumbers = allEntries.filter(num => !(/^601\d{7,9}$/.test(num)));
-
-      setTimeout(() => {
-        setButtonLoading(generateBtn, false);
-        
-        if (allEntries.length === 0) {
-          outputDiv.innerHTML = "<div class='error-message'>📝 Please enter at least one phone number to get started!</div>";
-          return;
-        }
-
-        if (validNumbers.length === 0) {
-          outputDiv.innerHTML = `
-            <div class='error-message'>
-              ❌ No valid numbers found.<br>
-              <strong>Required format:</strong> Malaysian numbers starting with 601<br>
-              <strong>Examples:</strong> 60123456789, 60112345678
+          <!-- Info Alert -->
+          <div class="alert alert-info d-flex align-items-start mb-3">
+            <i class="bi bi-info-circle flex-shrink-0 me-2 mt-1"></i>
+            <div>
+              <strong>Supported format:</strong> Malaysian numbers starting with 601 (e.g., 60123456789)<br>
+              <strong>Multiple numbers:</strong> Separate by commas, spaces, or new lines<br>
+              <strong>With names:</strong> Format as "Name, 60123456789" for personalized contacts
             </div>
-          `;
-          return;
-        }
-
-        // Show success message if we have valid numbers
-        if (validNumbers.length > 0) {
-          let successMessage = `✅ Generated ${validNumbers.length} WhatsApp link${validNumbers.length !== 1 ? 's' : ''} successfully!`;
-          if (invalidNumbers.length > 0) {
-            successMessage += ` (${invalidNumbers.length} invalid number${invalidNumbers.length !== 1 ? 's' : ''} skipped)`;
-          }
-          outputDiv.innerHTML = `<div class='success-message'>${successMessage}</div>`;
+          </div>
           
-          // Show progress section
-          document.getElementById('progressSection').style.display = 'block';
-          allNumbers = [...validNumbers];
+          <!-- Import Options -->
+          <div class="card bg-light mb-3 hover-lift">
+            <div class="card-body py-3">
+              <h6 class="card-subtitle mb-2 text-primary d-flex align-items-center">
+                <i class="bi bi-cloud-upload me-2"></i> Quick Import Options
+              </h6>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary btn-sm hover-lift" onclick="importFromCSV()">
+                  <i class="bi bi-file-earmark-spreadsheet me-1"></i> Import CSV
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm hover-lift" onclick="showSampleFormat()">
+                  <i class="bi bi-list-check me-1"></i> Show Format
+                </button>
+                <button type="button" class="btn btn-outline-success btn-sm hover-lift" onclick="enhanceContacts()">
+                  <i class="bi bi-person-plus me-1"></i> Add Names
+                </button>
+              </div>
+              <input type="file" id="csvFileInput" class="d-none" accept=".csv,.txt" onchange="handleFileImport(event)" />
+            </div>
+          </div>
           
-          // Load saved progress
-          loadSavedProgress();
-        }
-
-        validNumbers.forEach((number, index) => {
-          const button = document.createElement('button');
-          button.setAttribute('data-number', number);
-          button.innerHTML = `<span class="icon">💬</span> Chat with ${number}`;
-          button.onclick = () => openWhatsApp(number, button);
+          <div class="mb-3">
+            <label for="phoneInput" class="form-label fw-semibold d-flex align-items-center">
+              <i class="bi bi-list-ul me-2"></i> Phone Numbers:
+            </label>
+            <textarea 
+              id="phoneInput" 
+              class="form-control" 
+              rows="4" 
+              placeholder="60123456789 or multiple like:&#10;60123456789&#10;601112345678&#10;60133334444&#10;&#10;Or with names:&#10;John, 60123456789&#10;Mary, 601112345678"
+              oninput="updateCounter()"
+              onkeydown="handleKeyDown(event)"
+            ></textarea>
+            <div class="form-text d-flex justify-content-between align-items-center">
+              <span id="counter" class="badge bg-secondary">0 numbers</span>
+              <small class="text-muted">Press Ctrl+Enter to generate links quickly</small>
+            </div>
+          </div>
           
-          // Restore clicked state if previously clicked
-          if (clickedNumbers.has(number)) {
-            button.classList.add('clicked');
-            button.innerHTML = `<span class="icon">✓</span> Sent to ${number}`;
-          }
-
-          outputDiv.appendChild(button);
-        });
+          <div id="enhancedContactsList" class="d-none">
+            <div class="alert alert-warning">
+              <strong><i class="bi bi-pencil me-1"></i> Enhanced Contacts Preview:</strong>
+              <div id="contactsPreview" class="mt-2"></div>
+            </div>
+          </div>
+          
+          <button class="btn btn-whatsapp btn-lg w-100 fw-semibold" onclick="generateLinks()" id="generateBtn">
+            <i class="bi bi-rocket-takeoff me-2"></i> Generate WhatsApp Links
+          </button>
+        </div>
+      </div>
+      
+      <!-- Message Templates Section -->
+      <div class="card shadow-sm mb-4 hover-lift">
+        <div class="card-header d-flex justify-content-between align-items-center bg-transparent">
+          <h5 class="card-title mb-0 d-flex align-items-center">
+            <i class="bi bi-chat-text-fill text-success me-2"></i> Message Templates
+          </h5>
+          <button class="btn btn-sm btn-outline-secondary hover-lift" onclick="toggleTemplatesCollapse()" id="templateToggle">
+            <i class="bi bi-eye-slash me-1"></i> Hide
+          </button>
+        </div>
         
-        // Update progress and suggestions after creating buttons
-        updateProgress();
-        updateNextSuggestion();
-
-        // Show invalid numbers if any
-        if (invalidNumbers.length > 0) {
-          const invalidDiv = document.createElement('div');
-          invalidDiv.className = 'error-message';
-          invalidDiv.innerHTML = `
-            <strong>⚠️ Invalid numbers skipped:</strong><br>
-            ${invalidNumbers.join(', ')}<br>
-            <small>Make sure numbers start with 601 and have 10-12 digits total</small>
-          `;
-          outputDiv.appendChild(invalidDiv);
-        }
-      }, 500);
-    }
-    
-    // Initialize counter on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      updateCounter();
-      loadSavedProgress();
-      rebuildTemplateSelect();
-    });
-  </script>
-
+        <div class="card-body" id="templateContent">
+          <div class="mb-3">
+            <label for="templateSelect" class="form-label fw-semibold">Choose a template (optional):</label>
+            <select class="form-select" id="templateSelect" onchange="handleTemplateChange()">
+              <option value="">Select a template (optional)</option>
+              <option value="greeting">👋 Friendly Greeting</option>
+              <option value="follow-up">📞 Follow-up Message</option>
+              <option value="business">💼 Business Inquiry</option>
+              <option value="reminder">⏰ Gentle Reminder</option>
+              <option value="thank-you">🙏 Thank You Note</option>
+              <option value="invitation">🎉 Event Invitation</option>
+              <option value="custom">✏️ Write Custom Message</option>
+            </select>
+          </div>
+          
+          <div class="template-preview-card p-3 rounded d-none" id="templatePreview"></div>
+          
+          <textarea 
+            class="form-control d-none mt-3" 
+            id="customTemplate" 
+            rows="3"
+            placeholder="Write your custom message here..."
+            onchange="updateCustomTemplate()"
+          ></textarea>
+          
+          <div class="alert alert-light mt-3 d-flex align-items-start">
+            <i class="bi bi-lightbulb text-warning me-2 mt-1"></i>
+            <div>
+              <strong>Tip:</strong> Messages will be pre-filled in WhatsApp. You can still edit them before sending!
+            </div>
+          </div>
+          
+          <!-- Template Management -->
+          <div class="d-flex gap-2 flex-wrap mt-3">
+            <button class="btn btn-outline-primary btn-sm hover-lift" onclick="showAddTemplateForm()">
+              <i class="bi bi-plus-circle me-1"></i> Add Template
+            </button>
+            <button class="btn btn-outline-warning btn-sm hover-lift d-none" onclick="editCurrentTemplate()" id="editTemplateBtn">
+              <i class="bi bi-pencil me-1"></i> Edit
+            </button>
+            <button class="btn btn-outline-danger btn-sm hover-lift d-none" onclick="deleteCurrentTemplate()" id="deleteTemplateBtn">
+              <i class="bi bi-trash me-1"></i> Delete
+            </button>
+          </div>
+          
+          <!-- Template Form -->
+          <div class="card mt-3 d-none" id="templateForm">
+            <div class="card-body">
+              <h6 class="card-title">Create/Edit Template</h6>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="templateName" placeholder="Template name (e.g., 'Client Follow-up')" />
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="templateEmoji" placeholder="Emoji (e.g., '📞')" maxlength="2" />
+              </div>
+              <div class="mb-3">
+                <textarea class="form-control" id="templateMessage" rows="3" placeholder="Write your template message here..."></textarea>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-secondary hover-lift" onclick="cancelTemplateForm()">Cancel</button>
+                <button class="btn btn-primary hover-lift" onclick="saveTemplate()" id="saveTemplateBtn">Save Template</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Section -->
+      <div class="card shadow-sm mb-4 d-none hover-lift" id="progressSection">
+        <div class="card-header bg-transparent">
+          <h5 class="card-title mb-0 d-flex align-items-center">
+            <i class="bi bi-graph-up text-info me-2"></i> Session Progress
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Session Statistics -->
+          <div class="progress-stats p-3 mb-4">
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center hover-lift">
+                  <div class="h4 mb-1 text-primary fw-bold" id="statTotal">0</div>
+                  <small class="text-muted fw-medium">Total Contacts</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center hover-lift">
+                  <div class="h4 mb-1 text-success fw-bold" id="statCompleted">0</div>
+                  <small class="text-muted fw-medium">Completed</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center hover-lift">
+                  <div class="h4 mb-1 text-warning fw-bold" id="statRemaining">0</div>
+                  <small class="text-muted fw-medium">Remaining</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center hover-lift">
+                  <div class="h4 mb-1 text-info fw-bold" id="statTime">0m</div>
+                  <small class="text-muted fw-medium">Session Time</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-semibold" id="progressText">Ready to start messaging</span>
+              <span class="badge bg-primary fw-bold" id="progressPercentage">0%</span>
+            </div>
+            <div class="progress" style="height: 12px;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                   role="progressbar" 
+                   id="progressFill" 
+                   style="width: 0%">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Workflow Controls -->
+          <div class="d-flex gap-2 flex-wrap justify-content-center">
+            <button class="btn btn-outline-secondary btn-sm hover-lift" onclick="resetProgress()">
+              <i class="bi bi-arrow-clockwise me-1"></i> Reset All
+            </button>
+            <button class="btn btn-outline-success btn-sm hover-lift" onclick="markAllDone()">
+              <i class="bi bi-check-all me-1"></i> Mark All Done
+            </button>
+            <button class="btn btn-outline-warning btn-sm active hover-lift" onclick="toggleAutoNext()" id="autoNextBtn">
+              <i class="bi bi-lightning me-1"></i> Auto-suggest Next
+            </button>
+            <button class="btn btn-outline-info btn-sm hover-lift" onclick="exportProgress()">
+              <i class="bi bi-download me-1"></i> Export Report
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contacts List -->
+      <div class="row g-3" id="output"></div>
+      
+    </div>
+  </div>
+  
+  <!-- Completion Confetti Container -->
+  <div id="confettiContainer" class="position-fixed top-0 start-0 w-100 h-100 pointer-events-none" style="z-index: 9999;"></div>
+  
+  <!-- Toast Container -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-body d-flex align-items-center" id="toastBody">
+        <!-- Toast content will go here -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  
+  <!-- Custom JavaScript -->
+  <script src="script.js"></script>
 </body>
 </html>

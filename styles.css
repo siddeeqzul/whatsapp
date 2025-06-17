@@ -1,0 +1,294 @@
+:root {
+  --whatsapp-green: #25d366;
+  --whatsapp-dark: #128c7e;
+  --primary-gradient: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark));
+  --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0fdfa 100%);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+  --border-radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom Bootstrap Component Styles */
+.btn-whatsapp {
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  color: white;
+}
+
+.btn-whatsapp:active {
+  transform: translateY(0);
+}
+
+/* Enhanced Cards */
+.card {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Main Container */
+.main-container {
+  background: white;
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  max-width: 900px;
+  width: 100%;
+}
+
+/* App Header */
+.app-header {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* Custom Stepper */
+.stepper-custom {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.step-circle-custom {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e9ecef;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: var(--transition);
+  position: relative;
+  z-index: 2;
+}
+
+.step-active .step-circle-custom {
+  background: var(--whatsapp-green);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.2);
+}
+
+.step-completed .step-circle-custom {
+  background: #198754;
+  color: white;
+}
+
+/* Contact Cards */
+.contact-card {
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+
+.contact-card:hover {
+  transform: translateY(-2px);
+}
+
+.contact-completed {
+  border-color: #198754;
+  background: linear-gradient(135deg, #f8fff9, #e8f5e8);
+}
+
+.contact-next {
+  border-color: var(--whatsapp-green);
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(37, 211, 102, 0.1); }
+}
+
+/* Button Enhancements */
+.btn-contact {
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-contact::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transition: width 0.6s, height 0.6s;
+  transform: translate(-50%, -50%);
+}
+
+.btn-contact:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Template Preview Card */
+.template-preview-card {
+  background: linear-gradient(135deg, #f8faff, #e0f2fe);
+  border: 1px solid #bae6fd;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Progress Statistics */
+.progress-stats {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: var(--border-radius);
+  border: 1px solid #e2e8f0;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Loading States */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Success Animations */
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.success-animation {
+  animation: successPulse 0.6s ease;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .main-container {
+    margin: 1rem;
+  }
+  
+  .step-circle-custom {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+/* Enhanced Hover Effects */
+.hover-lift {
+  transition: var(--transition);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Custom Alert Styles */
+.alert {
+  border: none;
+  border-radius: var(--border-radius);
+}
+
+/* Form Enhancements */
+.form-control:focus {
+  border-color: var(--whatsapp-green);
+  box-shadow: 0 0 0 0.2rem rgba(37, 211, 102, 0.25);
+}
+
+.form-select:focus {
+  border-color: var(--whatsapp-green);
+  box-shadow: 0 0 0 0.2rem rgba(37, 211, 102, 0.25);
+}
+
+/* Confetti Animation */
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--whatsapp-green);
+  animation: confetti-fall 3s ease-out forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Toast Styles */
+.toast {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: none;
+}
+
+.toast-body {
+  padding: 1rem;
+  border-radius: 8px;
+}

@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WhatsApp Bulk Sender - Professional Messaging Tool</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --whatsapp-green: #25d366;
+      --whatsapp-dark: #128c7e;
+      --primary-gradient: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark));
+      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0fdfa 100%);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+      --border-radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Custom Bootstrap Component Styles */
+    .btn-whatsapp {
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-whatsapp:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      color: white;
+    }
+    
+    .btn-whatsapp:active {
+      transform: translateY(0);
+    }
+    
+    /* Enhanced Cards */
+    .card {
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Main Container */
+    .main-container {
+      background: white;
+      border-radius: 24px;
+      box-shadow: var(--shadow-lg);
+      max-width: 800px;
+      width: 100%;
+    }
+    
+    /* App Header */
+    .app-header {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+    
+    /* Custom Stepper */
+    .stepper-custom {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    
+    .step-circle-custom {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #e9ecef;
+      color: #6c757d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: var(--transition);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .step-active .step-circle-custom {
+      background: var(--whatsapp-green);
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.2);
+    }
+    
+    .step-completed .step-circle-custom {
+      background: #198754;
+      color: white;
+    }
+    
+    /* Contact Cards */
+    .contact-card {
+      transition: var(--transition);
+      border: 2px solid transparent;
+    }
+    
+    .contact-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .contact-completed {
+      border-color: #198754;
+      background: linear-gradient(135deg, #f8fff9, #e8f5e8);
+    }
+    
+    .contact-next {
+      border-color: var(--whatsapp-green);
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      animation: pulse-glow 2s infinite;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.3); }
+      50% { box-shadow: 0 0 0 8px rgba(37, 211, 102, 0.1); }
+    }
+    
+    /* Button Enhancements */
+    .btn-contact {
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-contact::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transition: width 0.6s, height 0.6s;
+      transform: translate(-50%, -50%);
+    }
+    
+    .btn-contact:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    /* Template Preview Card */
+    .template-preview-card {
+      background: linear-gradient(135deg, #f8faff, #e0f2fe);
+      border: 1px solid #bae6fd;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Progress Statistics */
+    .progress-stats {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border-radius: var(--border-radius);
+      border: 1px solid #e2e8f0;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Loading States */
+    .btn-loading {
+      position: relative;
+      pointer-events: none;
+    }
+    
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Success Animations */
+    @keyframes successPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .success-animation {
+      animation: successPulse 0.6s ease;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .main-container {
+        margin: 1rem;
+      }
+      
+      .step-circle-custom {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+    }
+    
+    /* Enhanced Hover Effects */
+    .hover-lift {
+      transition: var(--transition);
+    }
+    
+    .hover-lift:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Custom Alert Styles */
+    .alert {
+      border: none;
+      border-radius: var(--border-radius);
+    }
+    
+    /* Form Enhancements */
+    .form-control:focus {
+      border-color: var(--whatsapp-green);
+      box-shadow: 0 0 0 0.2rem rgba(37, 211, 102, 0.25);
+    }
+    
+    .form-select:focus {
+      border-color: var(--whatsapp-green);
+      box-shadow: 0 0 0 0.2rem rgba(37, 211, 102, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center p-3">
+    <div class="main-container p-4 my-3">
+      
+      <!-- App Header -->
+      <div class="text-center mb-4">
+        <h1 class="app-header display-5 mb-1">
+          <i class="bi bi-whatsapp"></i> WhatsApp Bulk Sender
+        </h1>
+        <p class="text-muted">Professional messaging tool for systematic contact management</p>
+      </div>
+
+      <!-- Progress Stepper -->
+      <div class="stepper-custom mb-4" id="stepper">
+        <div class="row text-center g-2">
+          <div class="col-3">
+            <div class="step-pending" id="step-input">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-telephone-plus"></i>
+              </div>
+              <small class="text-muted fw-medium">Input</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-template">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-chat-text"></i>
+              </div>
+              <small class="text-muted fw-medium">Template</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-progress">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-graph-up"></i>
+              </div>
+              <small class="text-muted fw-medium">Progress</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-report">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-file-earmark-check"></i>
+              </div>
+              <small class="text-muted fw-medium">Report</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Phone Input Section -->
+      <div class="card shadow-sm mb-4 hover-lift">
+        <div class="card-body">
+          <h5 class="card-title d-flex align-items-center mb-3">
+            <i class="bi bi-telephone-fill text-success me-2"></i> 
+            Enter Phone Numbers
+          </h5>
+          
+          <!-- Info Alert -->
+          <div class="alert alert-info d-flex align-items-start mb-3">
+            <i class="bi bi-info-circle flex-shrink-0 me-2 mt-1"></i>
+            <div>
+              <strong>Supported format:</strong> Malaysian numbers starting with 601 (e.g., 60123456789)<br>
+              <strong>Multiple numbers:</strong> Separate by commas, spaces, or new lines<br>
+              <strong>With names:</strong> Format as "Name, 60123456789" for personalized contacts
+            </div>
+          </div>
+          
+          <!-- Import Options -->
+          <div class="card bg-light mb-3 hover-lift">
+            <div class="card-body py-3">
+              <h6 class="card-subtitle mb-2 text-primary d-flex align-items-center">
+                <i class="bi bi-cloud-upload me-2"></i> Quick Import Options
+              </h6>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary btn-sm hover-lift" onclick="importFromCSV()">
+                  <i class="bi bi-file-earmark-spreadsheet me-1"></i> Import CSV
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm hover-lift" onclick="showSampleFormat()">
+                  <i class="bi bi-list-check me-1"></i> Show Format
+                </button>
+                <button type="button" class="btn btn-outline-success btn-sm hover-lift" onclick="enhanceContacts()">
+                  <i class="bi bi-person-plus me-1"></i> Add Names
+                </button>
+              </div>
+              <input type="file" id="csvFileInput" class="d-none" accept=".csv,.txt" onchange="handleFileImport(event)" />
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="phoneInput" class="form-label fw-semibold d-flex align-items-center">
+              <i class="bi bi-list-ul me-2"></i> Phone Numbers:
+            </label>
+            <textarea 
+              id="phoneInput" 
+              class="form-control" 
+              rows="4" 
+              placeholder="60123456789 or multiple like:&#10;60123456789&#10;601112345678&#10;60133334444&#10;&#10;Or with names:&#10;John, 60123456789&#10;Mary, 601112345678"
+              oninput="updateCounter()"
+              onkeydown="handleKeyDown(event)"
+            ></textarea>
+            <div class="form-text d-flex justify-content-between align-items-center">
+              <span id="counter" class="badge bg-secondary">0 numbers</span>
+              <small class="text-muted">Press Ctrl+Enter to generate links quickly</small>
+            </div>
+          </div>
+          
+          <div id="enhancedContactsList" class="d-none">
+            <div class="alert alert-warning">
+              <strong><i class="bi bi-pencil me-1"></i> Enhanced Contacts Preview:</strong>
+              <div id="contactsPreview" class="mt-2"></div>
+            </div>
+          </div>
+          
+          <button class="btn btn-whatsapp btn-lg w-100 fw-semibold" onclick="generateLinks()" id="generateBtn">
+            <i class="bi bi-rocket-takeoff me-2"></i> Generate WhatsApp Links
+          </button>
+        </div>
+      </div>
+      
+      <!-- Message Templates Section -->
+      <div class="card shadow-sm mb-4 hover-lift">
+        <div class="card-header d-flex justify-content-between align-items-center bg-transparent">
+          <h5 class="card-title mb-0 d-flex align-items-center">
+            <i class="bi bi-chat-text-fill text-success me-2"></i> Message Templates
+          </h5>
+          <button class="btn btn-sm btn-outline-secondary hover-lift" onclick="toggleTemplatesCollapse()" id="templateToggle">
+            <i class="bi bi-eye-slash me-1"></i> Hide
+          </button>
+        </div>
+        
+        <div class="card-body" id="templateContent">
+          <div class="mb-3">
+            <label for="templateSelect" class="form-label fw-semibold">Choose a template (optional):</label>
+            <select class="form-select" id="templateSelect" onchange="handleTemplateChange()">
+              <option value="">Select a template (optional)</option>
+              <option value="greeting">👋 Friendly Greeting</option>
+              <option value="follow-up">📞 Follow-up Message</option>
+              <option value="business">💼 Business Inquiry</option>
+              <option value="reminder">⏰ Gentle Reminder</option>
+              <option value="thank-you">🙏 Thank You Note</option>
+              <option value="invitation">🎉 Event Invitation</option>
+              <option value="custom">✏️ Write Custom Message</option>
+            </select>
+          </div>
+          
+          <div class="template-preview-card p-3 rounded d-none" id="templatePreview"></div>
+          
+          <textarea 
+            class="form-control d-none mt-3" 
+            id="customTemplate" 
+            rows="3"
+            placeholder="Write your custom message here..."
+            onchange="updateCustomTemplate()"
+          ></textarea>
+          
+          <div class="alert alert-light mt-3 d-flex align-items-start">
+            <i class="bi bi-lightbulb text-warning me-2 mt-1"></i>
+            <div>
+              <strong>Tip:</strong> Messages will be pre-filled in WhatsApp. You can still edit them before sending!
+            </div>
+          </div>
+          
+          <!-- Template Management -->
+          <div class="d-flex gap-2 flex-wrap mt-3">
+            <button class="btn btn-outline-primary btn-sm hover-lift" onclick="showAddTemplateForm()">
+              <i class="bi bi-plus-circle me-1"></i> Add Template
+            </button>
+            <button class="btn btn-outline-warning btn-sm hover-lift d-none" onclick="editCurrentTemplate()" id="editTemplateBtn">
+              <i class="bi bi-pencil me-1"></i> Edit
+            </button>
+            <button class="btn btn-outline-danger btn-sm hover-lift d-none" onclick="deleteCurrentTemplate()" id="deleteTemplateBtn">
+              <i class="bi bi-trash me-1"></i> Delete
+            </button>
+          </div>
+          
+          <!-- Template Form -->
+          <div class="card mt-3 d-none" id="templateForm">
+            <div class="card-body">
+              <h6 class="card-title">Create/Edit Template</h6>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="templateName" placeholder="Template name (e.g., 'Client Follow-up')" />
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="templateEmoji" placeholder="Emoji (e.g., '📞')" maxlength="2" />
+              </div>
+              <div class="mb-3">
+                <textarea class="form-control" id="templateMessage" rows="3" placeholder="Write your template message here..."></textarea>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-secondary hover-lift" onclick="cancelTemplateForm()">Cancel</button>
+                <button class="btn btn-primary hover-lift" onclick="saveTemplate()" id="saveTemplateBtn">Save Template</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Section -->
+      <div class="card shadow-sm mb-4 d-none hover-lift" id="progressSection">
+        <div class="card-header bg-transparent">
+          <h5 class="card-title mb-0 d-flex align-items-center">
+            <i class="bi bi-graph-up text-info me-2"></i> Session Progress
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Session Statistics -->
+          <div class="progress-stats p-3 mb-4">
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center hover-lift">
+                  <div class="h4 mb-1 text-primary fw-bold" id="statTotal">0</div>
+                  <small class="text-muted fw-medium">Total Contacts</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center hover-lift">
+                  <div class="h4 mb-1 text-success fw-bold" id="statCompleted">0</div>
+                  <small class="text-muted fw-medium">Completed</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center hover-lift">
+                  <div class="h4 mb-1 text-warning fw-bold" id="statRemaining">0</div>
+                  <small class="text-muted fw-medium">Remaining</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center hover-lift">
+                  <div class="h4 mb-1 text-info fw-bold" id="statTime">0m</div>
+                  <small class="text-muted fw-medium">Session Time</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-semibold" id="progressText">Ready to start messaging</span>
+              <span class="badge bg-primary fw-bold" id="progressPercentage">0%</span>
+            </div>
+            <div class="progress" style="height: 12px;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                   role="progressbar" 
+                   id="progressFill" 
+                   style="width: 0%">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Workflow Controls -->
+          <div class="d-flex gap-2 flex-wrap justify-content-center">
+            <button class="btn btn-outline-secondary btn-sm hover-lift" onclick="resetProgress()">
+              <i class="bi bi-arrow-clockwise me-1"></i> Reset All
+            </button>
+            <button class="btn btn-outline-success btn-sm hover-lift" onclick="markAllDone()">
+              <i class="bi bi-check-all me-1"></i> Mark All Done
+            </button>
+            <button class="btn btn-outline-warning btn-sm active hover-lift" onclick="toggleAutoNext()" id="autoNextBtn">
+              <i class="bi bi-lightning me-1"></i> Auto-suggest Next
+            </button>
+            <button class="btn btn-outline-info btn-sm hover-lift" onclick="exportProgress()">
+              <i class="bi bi-download me-1"></i> Export Report
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contacts List -->
+      <div class="row g-3" id="output"></div>
+      
+    </div>
+  </div>
+  
+  <!-- Completion Confetti Container -->
+  <div id="confettiContainer" class="position-fixed top-0 start-0 w-100 h-100 pointer-events-none" style="z-index: 9999;"></div>
+  
+  <!-- Toast Container -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-body d-flex align-items-center" id="toastBody">
+        <!-- Toast content will go here -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  
+  <script>
+      color: #4a5568;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    
+    .workflow-btn:hover {
+      border-color: #4299e1;
+      color: #2b6cb0;
+    }
+    
+    .workflow-btn.active {
+      background: #4299e1;
+      color: white;
+      border-color: #3182ce;
+    }
+    
+    .completion-message {
+      background: linear-gradient(135deg, #68d391, #38a169);
+      color: white;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      margin: 20px 0;
+      font-weight: 600;
+    }
+    
+    .error-message {
+      background: #fed7d7;
+      color: #c53030;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 10px;
+      border-left: 4px solid #e53e3e;
+    }
+    
+    .success-message {
+      background: #c6f6d5;
+      color: #2f855a;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      border-left: 4px solid #38a169;
+    }
+    
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+      position: relative;
+    }
+    
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .input-container {
+      position: relative;
+    }
+    
+    .input-help {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 15px;
+      padding: 8px 12px;
+      background: #f7fafc;
+      border-radius: 6px;
+      border-left: 3px solid #4299e1;
+    }
+    
+    .counter {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      background: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    .button-status {
+      font-size: 0.8rem;
+      color: #4a5568;
+      text-align: center;
+      margin-top: 5px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .button-status.show {
+      opacity: 1;
+    }
+    
+    .icon {
+      font-size: 18px;
+    }
+    
+    .templates-section {
+      margin: 20px 0;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .templates-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .templates-title {
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+    
+    .template-toggle {
+      font-size: 0.8rem;
+      color: #4299e1;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    
+    .template-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+    
+    .template-select:focus {
+      outline: none;
+      border-color: #25d366;
+    }
+    
+    .template-preview {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      font-size: 0.85rem;
+      color: #4a5568;
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .template-preview.show {
+      display: block;
+    }
+    
+    .custom-template {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 60px;
+      font-family: inherit;
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .custom-template.show {
+      display: block;
+    }
+    
+    .custom-template:focus {
+      outline: none;
+      border-color: #25d366;
+    }
+    
+    .template-tip {
+      font-size: 0.75rem;
+      color: #718096;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .template-management {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .template-btn {
+      padding: 6px 12px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: #4a5568;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+    }
+    
+    .template-btn:hover {
+      border-color: #4299e1;
+      color: #2b6cb0;
+    }
+    
+    .template-btn.danger {
+      color: #e53e3e;
+      border-color: #fed7d7;
+    }
+    
+    .template-btn.danger:hover {
+      background: #fed7d7;
+    }
+    
+    .template-btn.primary {
+      background: #4299e1;
+      color: white;
+      border-color: #3182ce;
+    }
+    
+    .template-btn.primary:hover {
+      background: #3182ce;
+    }
+    
+    .template-edit-mode {
+      background: #fff5d9 !important;
+      border-color: #f6ad55 !important;
+    }
+    
+    .template-form {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 2px solid #4299e1;
+      margin-top: 12px;
+      display: none;
+    }
+    
+    .template-form.show {
+      display: block;
+    }
+    
+    .template-form input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .template-form textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      min-height: 80px;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    
+    .template-form-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    
+    .contact-import {
+      margin: 15px 0;
+      padding: 12px;
+      background: #f0f9ff;
+      border-radius: 8px;
+      border: 1px solid #bae6fd;
+    }
+    
+    .import-header {
+      font-weight: 600;
+      color: #0369a1;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .import-options {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    
+    .import-btn {
+      padding: 6px 12px;
+      border: 1px solid #0369a1;
+      background: white;
+      color: #0369a1;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+    }
+    
+    .import-btn:hover {
+      background: #0369a1;
+      color: white;
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    .contact-enhancement {
+      margin: 10px 0;
+      padding: 8px;
+      background: #fef3c7;
+      border-radius: 6px;
+      border-left: 3px solid #f59e0b;
+      font-size: 0.85rem;
+    }
+    
+    .enhanced-contact {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin: 4px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .contact-info {
+      flex: 1;
+    }
+    
+    .contact-name {
+      font-weight: 600;
+      color: #166534;
+    }
+    
+    .contact-number {
+      font-size: 0.85rem;
+      color: #15803d;
+    }
+    
+    .contact-actions {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .contact-action-btn {
+      padding: 2px 6px;
+      border: 1px solid #d1d5db;
+      background: white;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .contact-action-btn:hover {
+      background: #f3f4f6;
+    }
+    
+    .session-stats {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 12px;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    
+    .stat-label {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+        margin: 10px;
+      }
+      
+      h2 {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="main-container p-4 my-3">
+      
+      <!-- App Header -->
+      <div class="text-center mb-4">
+        <h1 class="app-header display-5 mb-1">
+          <i class="bi bi-whatsapp"></i> WhatsApp Sender
+        </h1>
+        <p class="text-muted">Send messages to multiple contacts systematically</p>
+      </div>
+
+      <!-- Progress Stepper -->
+      <div class="stepper-custom mb-4" id="stepper">
+        <div class="row text-center">
+          <div class="col-3">
+            <div class="step-pending" id="step-input">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-phone"></i>
+              </div>
+              <small class="text-muted">Input</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-template">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-chat-text"></i>
+              </div>
+              <small class="text-muted">Template</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-progress">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-bar-chart"></i>
+              </div>
+              <small class="text-muted">Progress</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="step-pending" id="step-report">
+              <div class="step-circle-custom mx-auto mb-2">
+                <i class="bi bi-file-earmark-text"></i>
+              </div>
+              <small class="text-muted">Report</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <h2>WhatsApp Sender</h2>
+      
+      <!-- Phone Input Section -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-telephone-fill text-primary"></i> Enter Phone Numbers
+          </h5>
+          <div class="mb-3">
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle"></i>
+              <strong>Supported format:</strong> Malaysian numbers starting with 601 (e.g., 60123456789)<br>
+              <strong>Multiple numbers:</strong> Separate by commas, spaces, or new lines
+            </div>
+            
+            <!-- Import Options -->
+            <div class="card bg-light mb-3">
+              <div class="card-body py-3">
+                <h6 class="card-subtitle mb-2 text-primary">
+                  <i class="bi bi-cloud-upload"></i> Quick Import Options
+                </h6>
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="importFromCSV()">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Import CSV
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="showSampleFormat()">
+                    <i class="bi bi-list-check"></i> Show Format
+                  </button>
+                  <button type="button" class="btn btn-outline-success btn-sm" onclick="enhanceContacts()">
+                    <i class="bi bi-person-plus"></i> Add Names
+                  </button>
+                </div>
+                <input type="file" id="csvFileInput" class="d-none" accept=".csv,.txt" onchange="handleFileImport(event)" />
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="phoneInput" class="form-label fw-semibold">Phone Numbers:</label>
+            <textarea 
+              id="phoneInput" 
+              class="form-control" 
+              rows="4" 
+              placeholder="60123456789 or multiple like:&#10;60123456789&#10;601112345678&#10;60133334444&#10;&#10;Or with names:&#10;John, 60123456789&#10;Mary, 601112345678"
+              oninput="updateCounter()"
+              onkeydown="handleKeyDown(event)"
+            ></textarea>
+            <div class="form-text">
+              <span id="counter" class="badge bg-secondary">0 numbers</span>
+            </div>
+          </div>
+          
+          <div id="enhancedContactsList" class="d-none">
+            <div class="alert alert-warning">
+              <strong><i class="bi bi-pencil"></i> Enhanced Contacts Preview:</strong>
+              <div id="contactsPreview"></div>
+            </div>
+          </div>
+          
+          <button class="btn btn-whatsapp btn-lg w-100" onclick="generateLinks()" id="generateBtn">
+            <i class="bi bi-rocket"></i> Generate WhatsApp Links
+          </button>
+        </div>
+      </div>
+      
+      <!-- Message Templates Section -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-chat-text-fill text-success"></i> Message Templates
+          </h5>
+          <button class="btn btn-sm btn-outline-secondary" onclick="toggleTemplatesCollapse()" id="templateToggle">
+            <i class="bi bi-eye-slash"></i> Hide
+          </button>
+        </div>
+        
+        <div class="card-body" id="templateContent">
+          <div class="mb-3">
+            <label for="templateSelect" class="form-label">Choose a template (optional):</label>
+            <select class="form-select" id="templateSelect" onchange="handleTemplateChange()">
+              <option value="">Select a template (optional)</option>
+              <option value="greeting">👋 Friendly Greeting</option>
+              <option value="follow-up">📞 Follow-up Message</option>
+              <option value="business">💼 Business Inquiry</option>
+              <option value="reminder">⏰ Gentle Reminder</option>
+              <option value="thank-you">🙏 Thank You Note</option>
+              <option value="invitation">🎉 Event Invitation</option>
+              <option value="custom">✏️ Write Custom Message</option>
+            </select>
+          </div>
+          
+          <div class="template-preview-card p-3 rounded d-none" id="templatePreview"></div>
+          
+          <textarea 
+            class="form-control d-none mt-3" 
+            id="customTemplate" 
+            rows="3"
+            placeholder="Write your custom message here..."
+            onchange="updateCustomTemplate()"
+          ></textarea>
+          
+          <div class="alert alert-light mt-3">
+            <i class="bi bi-lightbulb"></i>
+            <strong>Tip:</strong> Messages will be pre-filled in WhatsApp. You can still edit them before sending!
+          </div>
+          
+          <!-- Template Management -->
+          <div class="d-flex gap-2 flex-wrap mt-3">
+            <button class="btn btn-outline-primary btn-sm" onclick="showAddTemplateForm()">
+              <i class="bi bi-plus-circle"></i> Add Template
+            </button>
+            <button class="btn btn-outline-warning btn-sm d-none" onclick="editCurrentTemplate()" id="editTemplateBtn">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button class="btn btn-outline-danger btn-sm d-none" onclick="deleteCurrentTemplate()" id="deleteTemplateBtn">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
+          
+          <!-- Template Form -->
+          <div class="card mt-3 d-none" id="templateForm">
+            <div class="card-body">
+              <h6 class="card-title">Create/Edit Template</h6>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="templateName" placeholder="Template name (e.g., 'Client Follow-up')" />
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="templateEmoji" placeholder="Emoji (e.g., '📞')" maxlength="2" />
+              </div>
+              <div class="mb-3">
+                <textarea class="form-control" id="templateMessage" rows="3" placeholder="Write your template message here..."></textarea>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-secondary" onclick="cancelTemplateForm()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveTemplate()" id="saveTemplateBtn">Save Template</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Section -->
+      <div class="card shadow-sm mb-4 d-none" id="progressSection">
+        <div class="card-header">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-graph-up text-info"></i> Session Progress
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Session Statistics -->
+          <div class="progress-stats p-3 mb-4">
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center">
+                  <div class="h4 mb-1 text-primary" id="statTotal">0</div>
+                  <small class="text-muted">Total Contacts</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center">
+                  <div class="h4 mb-1 text-success" id="statCompleted">0</div>
+                  <small class="text-muted">Completed</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center">
+                  <div class="h4 mb-1 text-warning" id="statRemaining">0</div>
+                  <small class="text-muted">Remaining</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card p-3 text-center">
+                  <div class="h4 mb-1 text-info" id="statTime">0m</div>
+                  <small class="text-muted">Session Time</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-semibold" id="progressText">Ready to start messaging</span>
+              <span class="badge bg-primary" id="progressPercentage">0%</span>
+            </div>
+            <div class="progress" style="height: 10px;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                   role="progressbar" 
+                   id="progressFill" 
+                   style="width: 0%">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Workflow Controls -->
+          <div class="d-flex gap-2 flex-wrap justify-content-center">
+            <button class="btn btn-outline-secondary btn-sm" onclick="resetProgress()">
+              <i class="bi bi-arrow-clockwise"></i> Reset All
+            </button>
+            <button class="btn btn-outline-success btn-sm" onclick="markAllDone()">
+              <i class="bi bi-check-all"></i> Mark All Done
+            </button>
+            <button class="btn btn-outline-warning btn-sm active" onclick="toggleAutoNext()" id="autoNextBtn">
+              <i class="bi bi-lightning"></i> Auto-suggest Next
+            </button>
+            <button class="btn btn-outline-info btn-sm" onclick="exportProgress()">
+              <i class="bi bi-download"></i> Export Report
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="buttons-container" id="output"></div>
+      <div class="button-status" id="status"></div>
+      
+      <div id="toast" class="toast"></div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (optional, for some components) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qQ2iX+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <!-- Contacts List -->
+      <div class="row g-3" id="output"></div>
+      
+    </div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-body" id="toastBody">
+        <!-- Toast content will go here -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <script>
+    let clickedNumbers = new Set();
+    let allNumbers = [];
+    let autoNextEnabled = true;
+    let selectedTemplate = '';
+    let customMessage = '';
+    let editingTemplateKey = null;
+    let contactsWithNames = new Map(); // Store contact names
+    let sessionStartTime = null;
+    let sessionTimer = null;
+    
+    // Default message templates
+    const defaultTemplates = {
+      greeting: { name: "Friendly Greeting", emoji: "👋", message: "Hi! Hope you're having a great day! 😊" },
+      'follow-up': { name: "Follow-up Message", emoji: "📞", message: "Hi! Just following up on our previous conversation. Looking forward to hearing from you!" },
+      business: { name: "Business Inquiry", emoji: "💼", message: "Hello! I hope this message finds you well. I wanted to reach out regarding a potential business opportunity." },
+      reminder: { name: "Gentle Reminder", emoji: "⏰", message: "Hi! Just a gentle reminder about our upcoming meeting/event. Please let me know if you have any questions!" },
+      'thank-you': { name: "Thank You Note", emoji: "🙏", message: "Thank you so much for your time and support! It means a lot to me. 🙏" },
+      invitation: { name: "Event Invitation", emoji: "🎉", message: "Hi! You're invited to our special event! Would love to have you join us. Details to follow! 🎉" }
+    };
+    
+    // Load custom templates from localStorage
+    function loadCustomTemplates() {
+      const saved = localStorage.getItem('whatsapp_custom_templates');
+      return saved ? JSON.parse(saved) : {};
+    }
+    
+    // Save custom templates to localStorage
+    function saveCustomTemplates(templates) {
+      localStorage.setItem('whatsapp_custom_templates', JSON.stringify(templates));
+    }
+    
+    // Get all templates (default + custom)
+    function getAllTemplates() {
+      const customTemplates = loadCustomTemplates();
+      return { ...defaultTemplates, ...customTemplates };
+    }
+    
+    // Rebuild template dropdown
+    function rebuildTemplateSelect() {
+      const select = document.getElementById('templateSelect');
+      const currentValue = select.value;
+      
+      // Clear existing options except the first one
+      select.innerHTML = '<option value="">Select a template (optional)</option>';
+      
+      const allTemplates = getAllTemplates();
+      
+      // Add all templates
+      Object.keys(allTemplates).forEach(key => {
+        const template = allTemplates[key];
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = `${template.emoji} ${template.name}`;
+        select.appendChild(option);
+      });
+      
+      // Add custom option
+      const customOption = document.createElement('option');
+      customOption.value = 'custom';
+      customOption.textContent = '✏️ Write Custom Message';
+      select.appendChild(customOption);
+      
+      // Restore previous selection if it still exists
+      if (currentValue && document.querySelector(`option[value="${currentValue}"]`)) {
+        select.value = currentValue;
+      }
+    }
+    
+    // Show add template form
+    function showAddTemplateForm() {
+      editingTemplateKey = null;
+      document.getElementById('templateName').value = '';
+      document.getElementById('templateEmoji').value = '';
+      document.getElementById('templateMessage').value = '';
+      document.getElementById('saveTemplateBtn').textContent = 'Save Template';
+      document.getElementById('templateForm').classList.add('show');
+    }
+    
+    // Edit current template
+    function editCurrentTemplate() {
+      const allTemplates = getAllTemplates();
+      const template = allTemplates[selectedTemplate];
+      
+      if (!template) return;
+      
+      editingTemplateKey = selectedTemplate;
+      document.getElementById('templateName').value = template.name;
+      document.getElementById('templateEmoji').value = template.emoji;
+      document.getElementById('templateMessage').value = template.message;
+      document.getElementById('saveTemplateBtn').textContent = 'Update Template';
+      document.getElementById('templateForm').classList.add('show');
+    }
+    
+    // Delete current template
+    function deleteCurrentTemplate() {
+      if (!selectedTemplate || !confirm(`Are you sure you want to delete the "${getAllTemplates()[selectedTemplate].name}" template?`)) {
+        return;
+      }
+      
+      // Can't delete default templates, only custom ones
+      const customTemplates = loadCustomTemplates();
+      if (customTemplates[selectedTemplate]) {
+        delete customTemplates[selectedTemplate];
+        saveCustomTemplates(customTemplates);
+        rebuildTemplateSelect();
+        
+        // Reset selection
+        document.getElementById('templateSelect').value = '';
+        handleTemplateChange();
+        
+        showStatus('Template deleted successfully! 🗑️', true);
+      } else {
+        showStatus('Cannot delete built-in templates. You can only delete custom templates.', false);
+      }
+    }
+    
+    // Save template
+    function saveTemplate() {
+      const name = document.getElementById('templateName').value.trim();
+      const emoji = document.getElementById('templateEmoji').value.trim();
+      const message = document.getElementById('templateMessage').value.trim();
+      
+      if (!name || !message) {
+        showStatus('Please fill in both template name and message.', false);
+        return;
+      }
+      
+      const customTemplates = loadCustomTemplates();
+      
+      // Generate key (use existing key if editing, or create new one)
+      let key = editingTemplateKey;
+      if (!key) {
+        key = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        // Ensure unique key
+        let counter = 1;
+        const originalKey = key;
+        while (getAllTemplates()[key]) {
+          key = `${originalKey}-${counter}`;
+          counter++;
+        }
+      }
+      
+      customTemplates[key] = {
+        name: name,
+        emoji: emoji || '📝',
+        message: message
+      };
+      
+      saveCustomTemplates(customTemplates);
+      rebuildTemplateSelect();
+      
+      // Select the new/edited template
+      document.getElementById('templateSelect').value = key;
+      handleTemplateChange();
+      
+      cancelTemplateForm();
+      
+      const action = editingTemplateKey ? 'updated' : 'saved';
+      showStatus(`Template ${action} successfully! ✅`, true);
+    }
+    
+    // Cancel template form
+    function cancelTemplateForm() {
+      document.getElementById('templateForm').classList.remove('show');
+      editingTemplateKey = null;
+    }
+    
+    function updateTemplateButtons() {
+      const editBtn = document.getElementById('editTemplateBtn');
+      const deleteBtn = document.getElementById('deleteTemplateBtn');
+      
+      if (selectedTemplate && selectedTemplate !== 'custom') {
+        editBtn.classList.remove('d-none');
+        
+        // Only show delete for custom templates
+        const customTemplates = loadCustomTemplates();
+        if (customTemplates[selectedTemplate]) {
+          deleteBtn.classList.remove('d-none');
+        } else {
+          deleteBtn.classList.add('d-none');
+        }
+      } else {
+        editBtn.classList.add('d-none');
+        deleteBtn.classList.add('d-none');
+      }
+    }
+    
+    function showAddTemplateForm() {
+      editingTemplateKey = null;
+      document.getElementById('templateName').value = '';
+      document.getElementById('templateEmoji').value = '';
+      document.getElementById('templateMessage').value = '';
+      document.getElementById('saveTemplateBtn').textContent = 'Save Template';
+      document.getElementById('templateForm').classList.remove('d-none');
+    }
+    
+    function cancelTemplateForm() {
+      document.getElementById('templateForm').classList.add('d-none');
+      editingTemplateKey = null;
+    }
+    
+    function toggleTemplatesCollapse() {
+      const content = document.getElementById('templateContent');
+      const toggle = document.getElementById('templateToggle');
+      
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggle.textContent = 'Hide';
+      } else {
+        content.style.display = 'none';
+        toggle.textContent = 'Show';
+      }
+    }
+    
+    function handleTemplateChange() {
+      const select = document.getElementById('templateSelect');
+      const preview = document.getElementById('templatePreview');
+      const customTextarea = document.getElementById('customTemplate');
+      
+      selectedTemplate = select.value;
+      
+      if (selectedTemplate === 'custom') {
+        customTextarea.classList.remove('d-none');
+        preview.classList.add('d-none');
+      } else {
+        customTextarea.classList.add('d-none');
+        
+        if (selectedTemplate) {
+          const allTemplates = getAllTemplates();
+          const template = allTemplates[selectedTemplate];
+          
+          if (template) {
+            preview.innerHTML = `<strong>Preview:</strong><br>"${template.message}"`;
+            preview.classList.remove('d-none');
+          }
+        } else {
+          preview.classList.add('d-none');
+        }
+      }
+      
+      updateTemplateButtons();
+      updateStepper('template');
+    }
+    
+    function updateCustomTemplate() {
+      customMessage = document.getElementById('customTemplate').value;
+    }
+    
+    function getCurrentMessage() {
+      if (selectedTemplate === 'custom') {
+        return customMessage;
+      } else if (selectedTemplate) {
+        const allTemplates = getAllTemplates();
+        const template = allTemplates[selectedTemplate];
+        return template ? template.message : '';
+      }
+      return '';
+    }
+    
+    // Toast/snackbar logic
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+    
+    // Replace showStatus to use showToast
+    function showStatus(message, isSuccess = false) {
+      showToast(message);
+    }
+    
+    // Stepper logic
+    function updateStepper(phase) {
+      const steps = ['input', 'template', 'progress', 'report'];
+      steps.forEach((step, idx) => {
+        const el = document.getElementById('step-' + step);
+        el.classList.remove('active', 'completed');
+        if (steps.indexOf(phase) > idx) {
+          el.classList.add('completed');
+        } else if (steps.indexOf(phase) === idx) {
+          el.classList.add('active');
+        }
+      });
+    }
+    
+    // Call updateStepper at key workflow transitions
+    function generateLinks() {
+      const input = document.getElementById('phoneInput').value;
+      const outputDiv = document.getElementById('output');
+      const generateBtn = document.getElementById('generateBtn');
+      
+      setButtonLoading(generateBtn, true);
+      outputDiv.innerHTML = ''; // clear previous output
+
+      // Split by comma, space, or newline
+      const allEntries = parseContactsWithNames(input);
+      const validNumbers = allEntries.filter(num => /^601\d{7,9}$/.test(num));
+      const invalidNumbers = allEntries.filter(num => !(/^601\d{7,9}$/.test(num)));
+
+      setTimeout(() => {
+        setButtonLoading(generateBtn, false);
+        
+        if (allEntries.length === 0) {
+          outputDiv.innerHTML = "<div class='error-message'>📝 Please enter at least one phone number to get started!</div>";
+          return;
+        }
+
+        if (validNumbers.length === 0) {
+          outputDiv.innerHTML = `
+            <div class='error-message'>
+              ❌ No valid numbers found.<br>
+              <strong>Required format:</strong> Malaysian numbers starting with 601<br>
+              <strong>Examples:</strong> 60123456789, 60112345678
+            </div>
+          `;
+          return;
+        }
+
+        // Show success message if we have valid numbers
+        if (validNumbers.length > 0) {
+          let successMessage = `✅ Generated ${validNumbers.length} WhatsApp link${validNumbers.length !== 1 ? 's' : ''} successfully!`;
+          if (invalidNumbers.length > 0) {
+            successMessage += ` (${invalidNumbers.length} invalid number${invalidNumbers.length !== 1 ? 's' : ''} skipped)`;
+          }
+          outputDiv.innerHTML = `<div class='success-message'>${successMessage}</div>`;
+          
+          // Show progress section
+          document.getElementById('progressSection').style.display = 'block';
+          allNumbers = [...validNumbers];
+          
+          // Load saved progress
+          loadSavedProgress();
+        }
+
+        validNumbers.forEach((number, index) => {
+          const name = contactsWithNames.get(number);
+          const displayText = name ? `${name}` : `Contact ${index + 1}`;
+          const isCompleted = clickedNumbers.has(number);
+          
+          // Create Bootstrap card for each contact
+          const col = document.createElement('div');
+          col.className = 'col-md-6 col-lg-4';
+          
+          const contactClass = isCompleted ? 'contact-completed' : 
+                              (index === 0 && !isCompleted) ? 'contact-next' : '';
+          
+          col.innerHTML = `
+            <div class="contact-card card h-100 ${contactClass}" data-number="${number}">
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="me-2">
+                    ${isCompleted ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-whatsapp text-success"></i>'}
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="card-title mb-0">${displayText}</h6>
+                    <small class="text-muted">${number}</small>
+                  </div>
+                </div>
+                <button class="btn ${isCompleted ? 'btn-success' : 'btn-outline-success'} btn-contact mt-auto" 
+                        onclick="openWhatsApp('${number}', this)" 
+                        ${isCompleted ? 'disabled' : ''}>
+                  <i class="bi bi-${isCompleted ? 'check' : 'chat-dots'}"></i>
+                  ${isCompleted ? 'Sent' : 'Send Message'}
+                </button>
+              </div>
+            </div>
+          `;
+          
+          outputDiv.appendChild(col);
+        });
+        
+        // Update progress and suggestions after creating buttons
+        updateProgress();
+        updateNextSuggestion();
+
+        // Show invalid numbers if any
+        if (invalidNumbers.length > 0) {
+          const invalidDiv = document.createElement('div');
+          invalidDiv.className = 'error-message';
+          invalidDiv.innerHTML = `
+            <strong>⚠️ Invalid numbers skipped:</strong><br>
+            ${invalidNumbers.join(', ')}<br>
+            <small>Make sure numbers start with 601 and have 10-12 digits total</small>
+          `;
+          outputDiv.appendChild(invalidDiv);
+        }
+      }, 500);
+    }
+    
+    // Initialize counter on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCounter();
+      loadSavedProgress();
+      rebuildTemplateSelect();
+    });
+  </script>
+
+</body>
+</html>
